@@ -5,7 +5,7 @@
     'image',
 ])
 
-<article class="product-card">
+<a class="product-card" href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($name)]) }}">
     <div class="product-card-inner">
         <div class="product-image-wrap">
             <img src="{{ $image }}" alt="{{ $name }}" loading="lazy" width="500" height="500">
@@ -16,4 +16,4 @@
             <div class="product-price">${{ number_format($price, 2) }}</div>
         </div>
     </div>
-</article>
+</a>
