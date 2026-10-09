@@ -124,8 +124,8 @@
                 <span>$40.45</span>
             </div>
 
-            <a href="{{ route('product.show', ['slug' => 'push-ride-on-car']) }}" class="header-cart-action">View Cart</a>
-            <a href="#newsletter" class="header-cart-action" @click="cartOpen = false">Checkout</a>
+            <a href="{{ route('cart') }}" class="header-cart-action">View Cart</a>
+            <a href="{{ route('checkout') }}" class="header-cart-action">Checkout</a>
         </aside>
 
         <nav id="mobile-menu" class="mobile-nav" :class="{ 'open': open }" aria-label="Mobile">
