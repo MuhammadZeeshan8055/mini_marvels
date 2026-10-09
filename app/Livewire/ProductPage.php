@@ -37,14 +37,14 @@ class ProductPage extends Component
     private function products(): array
     {
         return [
-            ['name' => 'Stuffed Deer Toy', 'category' => 'Stuffed Dolls', 'price' => 21.55, 'image' => 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=900&h=900&fit=crop'],
-            ['name' => 'Wooden Rocking Horse', 'category' => 'Wood Toys', 'price' => 15.60, 'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=900&h=900&fit=crop'],
-            ['name' => 'Funny Teddy', 'category' => 'Learning Toys', 'price' => 20.50, 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=900&h=900&fit=crop'],
-            ['name' => 'Woolen Baby Girl', 'category' => 'Stuffed Dolls', 'price' => 21.70, 'image' => 'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=900&h=900&fit=crop'],
-            ['name' => 'Fancy Teddy Bear', 'category' => 'Stuffed Dolls', 'price' => 20.85, 'image' => 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=900&h=900&fit=crop'],
-            ['name' => 'Push Ride On Car', 'category' => 'Play Toys', 'price' => 25.25, 'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=900&h=900&fit=crop'],
-            ['name' => 'Baby Stroller Toy', 'category' => 'Play Toys', 'price' => 24.85, 'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=900&h=900&fit=crop'],
-            ['name' => 'Handmade Teddy Bear', 'category' => 'Stuffed Dolls', 'price' => 23.60, 'image' => 'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=900&h=900&fit=crop'],
+            ['name' => 'Stuffed Deer Toy', 'category' => 'Stuffed Dolls', 'age' => '3–5 years', 'price' => 21.55, 'image' => 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=900&h=900&fit=crop'],
+            ['name' => 'Wooden Rocking Horse', 'category' => 'Wood Toys', 'age' => '3–5 years', 'price' => 15.60, 'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=900&h=900&fit=crop'],
+            ['name' => 'Funny Teddy', 'category' => 'Learning Toys', 'age' => '0–2 years', 'price' => 20.50, 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=900&h=900&fit=crop'],
+            ['name' => 'Woolen Baby Girl', 'category' => 'Stuffed Dolls', 'age' => '3–5 years', 'price' => 21.70, 'image' => 'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=900&h=900&fit=crop'],
+            ['name' => 'Fancy Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0–2 years', 'price' => 20.85, 'image' => 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=900&h=900&fit=crop'],
+            ['name' => 'Push Ride On Car', 'category' => 'Play Toys', 'age' => '3–5 years', 'price' => 25.25, 'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=900&h=900&fit=crop'],
+            ['name' => 'Baby Stroller Toy', 'category' => 'Play Toys', 'age' => '3–5 years', 'price' => 24.85, 'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=900&h=900&fit=crop'],
+            ['name' => 'Handmade Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0–2 years', 'price' => 23.60, 'image' => 'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=900&h=900&fit=crop'],
         ];
     }
 }

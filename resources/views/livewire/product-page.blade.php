@@ -148,7 +148,7 @@
             <h2>Related Products</h2>
             <div class="product-grid related-product-grid">
                 @foreach ($related as $item)
-                    <x-product-card :name="$item['name']" :category="$item['category']" :price="$item['price']" :image="$item['image']" />
+                    <x-product-card :name="$item['name']" :category="$item['category']" :age="$item['age']" :price="$item['price']" :image="$item['image']" />
                 @endforeach
             </div>
         </div>

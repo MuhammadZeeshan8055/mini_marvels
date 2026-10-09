@@ -221,6 +221,7 @@
                 <x-product-card
                     :name="$product['name']"
                     :category="$product['category']"
+                    :age="$product['age']"
                     :price="$product['price']"
                     :image="$product['image']"
                 />
@@ -282,6 +283,7 @@
                 <x-product-card
                     :name="$product['name']"
                     :category="$product['category']"
+                    :age="$product['age']"
                     :price="$product['price']"
                     :image="$product['image']"
                 />

@@ -3,17 +3,19 @@
     'category',
     'price',
     'image',
+    'age' => null,
 ])
 
-<a class="product-card" href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($name)]) }}">
-    <div class="product-card-inner">
-        <div class="product-image-wrap">
-            <img src="{{ $image }}" alt="{{ $name }}" loading="lazy" width="500" height="500">
-        </div>
-        <div class="product-body">
-            <span class="product-cat">{{ $category }}</span>
-            <h3 class="product-name">{{ $name }}</h3>
-            <div class="product-price">${{ number_format($price, 2) }}</div>
-        </div>
+<article {{ $attributes->class('shop-product-card') }}>
+    <a class="shop-product-image" href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($name)]) }}">
+        <img src="{{ $image }}" alt="{{ $name }}" loading="lazy" width="520" height="520">
+        @if ($age)
+            <span>{{ $age }}</span>
+        @endif
+    </a>
+    <div class="shop-product-copy">
+        <small>{{ $category }}</small>
+        <h3><a href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($name)]) }}">{{ $name }}</a></h3>
+        <strong>${{ number_format($price, 2) }}</strong>
     </div>
-</a>
+</article>

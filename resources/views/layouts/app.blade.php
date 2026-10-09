@@ -61,7 +61,7 @@
                 <nav class="nav-left" aria-label="Main">
                     <a href="{{ url('/') }}">Home</a>
                     <a href="#categories">Pages</a>
-                    <a href="#products">Shop</a>
+                    <a href="{{ route('shop') }}">Shop</a>
                     <a href="#testimonials">Blog</a>
                     <a href="#newsletter">Contact Us</a>
                 </nav>
@@ -131,7 +131,7 @@
         <nav id="mobile-menu" class="mobile-nav" :class="{ 'open': open }" aria-label="Mobile">
             <a href="{{ url('/') }}" @click="open = false">Home</a>
             <a href="#categories" @click="open = false">Pages</a>
-            <a href="#products" @click="open = false">Shop</a>
+            <a href="{{ route('shop') }}" @click="open = false">Shop</a>
             <a href="#testimonials" @click="open = false">Blog</a>
             <a href="#newsletter" @click="open = false">Contact Us</a>
         </nav>
