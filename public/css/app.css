@@ -2986,6 +2986,12 @@ a {
 }
 
 .shop-filter-panel summary::-webkit-details-marker { display: none; }
+.shop-filter-chevron {
+    flex: 0 0 auto;
+    transition: transform 200ms ease;
+}
+
+.shop-filter-panel[open] .shop-filter-chevron { transform: rotate(180deg); }
 .shop-filters { padding: 1.4rem; }
 
 .shop-filter-group {

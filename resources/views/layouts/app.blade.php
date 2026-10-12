@@ -72,12 +72,6 @@
             </a>
 
             <div class="header-icons">
-                <button type="button" class="icon-btn" aria-label="Search">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <circle cx="11" cy="11" r="7"/><path stroke-linecap="round" d="m20 20-3-3"/>
-                    </svg>
-                </button>
-
                 <a href="{{ auth()->check() ? route('account') : route('login') }}" class="icon-btn" aria-label="{{ auth()->check() ? 'My account' : 'Login' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="8" r="4"/><path stroke-linecap="round" d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/>

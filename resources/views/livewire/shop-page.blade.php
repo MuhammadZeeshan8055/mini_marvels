@@ -24,7 +24,12 @@
             <div class="shop-layout">
                 <aside>
                     <details class="shop-filter-panel" open>
-                        <summary>Filter products <span>⌄</span></summary>
+                        <summary>
+                            <span>Filter products</span>
+                            <svg class="shop-filter-chevron" viewBox="0 0 20 20" width="20" height="20" aria-hidden="true">
+                                <path d="m5 7.5 5 5 5-5" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                            </svg>
+                        </summary>
                         <div class="shop-filters">
                             <div class="shop-filter-group shop-search-group">
                                 <label for="shop-search">Search products</label>
