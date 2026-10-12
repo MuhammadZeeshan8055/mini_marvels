@@ -60,7 +60,7 @@
 
                 <nav class="nav-left" aria-label="Main">
                     <a href="{{ url('/') }}">Home</a>
-                    <a href="#categories">Pages</a>
+                    <!-- <a href="#categories">Pages</a> -->
                     <a href="{{ route('shop') }}">Shop</a>
                     <a href="#testimonials">Blog</a>
                     <a href="#newsletter">Contact Us</a>
@@ -78,7 +78,7 @@
                     </svg>
                 </button>
 
-                <a href="{{ route('login') }}" class="icon-btn" aria-label="Account">
+                <a href="{{ auth()->check() ? route('account') : route('login') }}" class="icon-btn" aria-label="{{ auth()->check() ? 'My account' : 'Login' }}">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                         <circle cx="12" cy="8" r="4"/><path stroke-linecap="round" d="M4 20c1.5-3.5 4.5-5 8-5s6.5 1.5 8 5"/>
                     </svg>
@@ -130,7 +130,7 @@
 
         <nav id="mobile-menu" class="mobile-nav" :class="{ 'open': open }" aria-label="Mobile">
             <a href="{{ url('/') }}" @click="open = false">Home</a>
-            <a href="#categories" @click="open = false">Pages</a>
+            <!-- <a href="#categories" @click="open = false">Pages</a> -->
             <a href="{{ route('shop') }}" @click="open = false">Shop</a>
             <a href="#testimonials" @click="open = false">Blog</a>
             <a href="#newsletter" @click="open = false">Contact Us</a>
@@ -348,6 +348,8 @@
                 '.testimonial-card',
                 '.auth-card',
                 '.gift-card-note',
+                '.account-sidebar',
+                '.account-stat',
             ].join(',');
 
             const revealCards = () => {

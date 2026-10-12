@@ -42,7 +42,7 @@ class AuthPage extends Component
 
         session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()->route('account');
     }
 
     public function register()
@@ -65,7 +65,7 @@ class AuthPage extends Component
         Auth::login($user);
         session()->regenerate();
 
-        return redirect()->route('home');
+        return redirect()->route('account');
     }
 
     public function render()

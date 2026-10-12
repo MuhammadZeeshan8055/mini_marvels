@@ -28,7 +28,7 @@ class AuthPageTest extends TestCase
             ->set('terms', true)
             ->call('register')
             ->assertHasNoErrors()
-            ->assertRedirect(route('home'));
+            ->assertRedirect(route('account'));
 
         $this->assertAuthenticated();
         $this->assertDatabaseHas('users', ['email' => 'ayesha@example.com']);
@@ -44,7 +44,7 @@ class AuthPageTest extends TestCase
             ->set('remember', true)
             ->call('login')
             ->assertHasNoErrors()
-            ->assertRedirect(route('home'));
+            ->assertRedirect(route('account'));
 
         $this->assertAuthenticatedAs($user);
     }
