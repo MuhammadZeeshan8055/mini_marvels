@@ -60,7 +60,8 @@ class ShopPage extends Component
                 'slug' => $product->slug,
                 'category' => $product->category?->name ?? 'Toys',
                 'age' => $product->age,
-                'price' => (float) $product->price,
+                'price' => $product->salePrice(),
+                'official_price' => $product->onSale() ? $product->officialPrice() : null,
                 'image' => $colors[0]['image'] ?? $product->imageUrl(),
                 'colors' => $colors,
             ];

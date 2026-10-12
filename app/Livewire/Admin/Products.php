@@ -22,7 +22,15 @@ class Products extends Component
 
     public string $description = '';
 
+    public string $meta_title = '';
+
+    public string $meta_description = '';
+
+    public string $meta_keywords = '';
+
     public string $price = '';
+
+    public string $official_price = '';
 
     public string $age = '';
 
@@ -65,7 +73,11 @@ class Products extends Component
         $this->editingId = $product->id;
         $this->name = $product->name;
         $this->description = $product->description ?? '';
+        $this->meta_title = $product->meta_title ?? '';
+        $this->meta_description = $product->meta_description ?? '';
+        $this->meta_keywords = $product->meta_keywords ?? '';
         $this->price = (string) $product->price;
+        $this->official_price = $product->official_price !== null ? (string) $product->official_price : '';
         $this->age = $product->age ?? '';
         $this->stock = (string) $product->stock;
         $this->category_id = $product->category_id;
@@ -108,13 +120,53 @@ class Products extends Component
         $this->dispatch('toast', message: 'Main display image updated', type: 'success');
     }
 
+    public function moveGalleryImage(int $index, string $direction): void
+    {
+        $swapWith = $direction === 'up' ? $index - 1 : $index + 1;
+
+        if (! isset($this->gallery[$index], $this->gallery[$swapWith])) {
+            return;
+        }
+
+        $gallery = $this->gallery;
+        $temp = $gallery[$index];
+        $gallery[$index] = $gallery[$swapWith];
+        $gallery[$swapWith] = $temp;
+
+        $this->gallery = array_values($gallery);
+        $this->persistGalleryOrder();
+
+        $this->dispatch('toast', message: 'Image order updated', type: 'success');
+    }
+
+    private function persistGalleryOrder(): void
+    {
+        foreach ($this->gallery as $order => $item) {
+            if (empty($item['id'])) {
+                continue;
+            }
+
+            $query = ProductImage::where('id', $item['id']);
+
+            if ($this->editingId) {
+                $query->where('product_id', $this->editingId);
+            }
+
+            $query->update(['sort_order' => $order]);
+        }
+    }
+
     public function resetForm(): void
     {
         $this->reset([
             'editingId',
             'name',
             'description',
+            'meta_title',
+            'meta_description',
+            'meta_keywords',
             'price',
+            'official_price',
             'age',
             'stock',
             'category_id',
@@ -149,6 +201,7 @@ class Products extends Component
 
         unset($this->gallery[$index]);
         $this->gallery = array_values($this->gallery);
+        $this->persistGalleryOrder();
 
         if ($this->editingId) {
             $this->syncCoverImage(Product::find($this->editingId));
@@ -161,8 +214,12 @@ class Products extends Component
     {
         $this->validate([
             'name' => ['required', 'string', 'min:2', 'max:150'],
-            'description' => ['nullable', 'string', 'max:5000'],
+            'description' => ['nullable', 'string', 'max:50000'],
+            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_description' => ['nullable', 'string', 'max:160'],
+            'meta_keywords' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
+            'official_price' => ['nullable', 'numeric', 'min:0', 'gte:price'],
             'age' => ['nullable', 'string', 'max:50'],
             'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
@@ -184,8 +241,12 @@ class Products extends Component
             'category_id' => $this->category_id,
             'name' => $this->name,
             'slug' => Str::slug($this->name),
-            'description' => $this->description !== '' ? $this->description : null,
+            'description' => $this->cleanedDescription(),
+            'meta_title' => $this->meta_title !== '' ? $this->meta_title : null,
+            'meta_description' => $this->meta_description !== '' ? $this->meta_description : null,
+            'meta_keywords' => $this->meta_keywords !== '' ? $this->meta_keywords : null,
             'price' => $this->price,
+            'official_price' => $this->official_price !== '' ? $this->official_price : null,
             'age' => $this->age !== '' ? $this->age : null,
             'stock' => (int) $this->stock,
             'is_featured' => $this->is_featured,
@@ -211,16 +272,20 @@ class Products extends Component
             $message = 'Product added';
         }
 
-        foreach ($this->gallery as $item) {
+        foreach ($this->gallery as $order => $item) {
+            $hasColor = ! empty($item['has_color']);
+            $colorName = trim((string) ($item['color_name'] ?? ''));
+            $colorHex = trim((string) ($item['color_hex'] ?? ''));
+
             ProductImage::where('id', $item['id'])
                 ->where('product_id', $product->id)
                 ->update([
-                    'color_name' => ($item['color_name'] ?? '') !== '' ? $item['color_name'] : 'Color',
-                    'color_hex' => ($item['color_hex'] ?? '') !== '' ? $item['color_hex'] : '#d5b08a',
+                    'color_name' => $hasColor && $colorName !== '' ? $colorName : null,
+                    'color_hex' => $hasColor && $colorHex !== '' ? $colorHex : null,
+                    'sort_order' => $order,
                 ]);
         }
 
-        $defaults = ['#d92720', '#2f6fed', '#f5d76e', '#2d2a32', '#f7a8c5', '#a8e6cf'];
         $startIndex = $product->images()->count();
         $uploadedCount = 0;
 
@@ -228,11 +293,12 @@ class Products extends Component
             $path = $file->store('products', 'public');
             $order = $startIndex + $i;
 
+            // Colors are optional — leave blank unless set later in the form
             ProductImage::create([
                 'product_id' => $product->id,
                 'path' => $path,
-                'color_name' => 'Color '.($order + 1),
-                'color_hex' => $defaults[$order % count($defaults)],
+                'color_name' => null,
+                'color_hex' => null,
                 'sort_order' => $order,
             ]);
 
@@ -295,20 +361,67 @@ class Products extends Component
         );
     }
 
+    public function clearImageColor(int $index): void
+    {
+        if (! isset($this->gallery[$index])) {
+            return;
+        }
+
+        $this->gallery[$index]['has_color'] = false;
+        $this->gallery[$index]['color_name'] = '';
+        $this->gallery[$index]['color_hex'] = '';
+    }
+
+    public function enableImageColor(int $index): void
+    {
+        if (! isset($this->gallery[$index])) {
+            return;
+        }
+
+        $this->gallery[$index]['has_color'] = true;
+        if (($this->gallery[$index]['color_name'] ?? '') === '') {
+            $this->gallery[$index]['color_name'] = 'Color';
+        }
+        if (($this->gallery[$index]['color_hex'] ?? '') === '') {
+            $this->gallery[$index]['color_hex'] = '#d5b08a';
+        }
+    }
+
     private function loadGallery(Product $product): void
     {
         $this->gallery = $product->images
             ->sortBy('sort_order')
             ->values()
-            ->map(fn (ProductImage $image) => [
-                'id' => $image->id,
-                'url' => $image->url(),
-                'path' => $image->path,
-                'color_name' => $image->color_name ?: 'Color',
-                'color_hex' => $image->color_hex ?: '#d5b08a',
-                'is_main' => $product->image === $image->path,
-            ])
+            ->map(function (ProductImage $image) use ($product) {
+                $hasColor = filled($image->color_name) || filled($image->color_hex);
+
+                return [
+                    'id' => $image->id,
+                    'url' => $image->url(),
+                    'path' => $image->path,
+                    'has_color' => $hasColor,
+                    'color_name' => $image->color_name ?? '',
+                    'color_hex' => $image->color_hex ?? '',
+                    'is_main' => $product->image === $image->path,
+                ];
+            })
             ->all();
+    }
+
+    private function cleanedDescription(): ?string
+    {
+        $html = trim($this->description);
+
+        if ($html === '' || $html === '<p><br></p>' || trim(strip_tags($html)) === '') {
+            return null;
+        }
+
+        // Allow Quill formatting; strip scripts / event handlers
+        $html = preg_replace('#<script\b[^>]*>.*?</script>#is', '', $html) ?? $html;
+        $html = preg_replace('#\son\w+\s*=\s*("|\')(.*?)\1#i', '', $html) ?? $html;
+        $html = preg_replace('#javascript:#i', '', $html) ?? $html;
+
+        return $html;
     }
 
     private function syncCoverImage(?Product $product = null): void

@@ -10,6 +10,7 @@
     'age' => null,
     'slug' => null,
     'colors' => [],
+    'officialPrice' => null,
 ])
 
 @php
@@ -90,6 +91,11 @@
     <div class="shop-product-copy">
         <small>{{ $category }}</small>
         <h3><a href="{{ $productUrl }}">{{ $name }}</a></h3>
-        <strong>${{ number_format($price, 2) }}</strong>
+        <div class="shop-product-price">
+            @if ($officialPrice !== null && (float) $officialPrice > (float) $price)
+                <s>${{ number_format((float) $officialPrice, 2) }}</s>
+            @endif
+            <strong>${{ number_format((float) $price, 2) }}</strong>
+        </div>
     </div>
 </article>

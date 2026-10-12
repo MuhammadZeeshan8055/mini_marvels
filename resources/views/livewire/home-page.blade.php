@@ -224,6 +224,7 @@
                     :category="$product['category']"
                     :age="$product['age']"
                     :price="$product['price']"
+                    :official-price="$product['official_price'] ?? null"
                     :image="$product['image']"
                     :colors="$product['colors'] ?? []"
                 />
@@ -288,6 +289,7 @@
                     :category="$product['category']"
                     :age="$product['age']"
                     :price="$product['price']"
+                    :official-price="$product['official_price'] ?? null"
                     :image="$product['image']"
                     :colors="$product['colors'] ?? []"
                 />

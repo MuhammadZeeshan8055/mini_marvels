@@ -2047,9 +2047,24 @@ a {
 
 .product-detail-price {
     margin-top: 0.75rem;
+    display: flex;
+    align-items: baseline;
+    flex-wrap: wrap;
+    gap: 0.55rem;
     color: #111;
     font-size: 1.05rem;
     font-weight: 700;
+}
+
+.product-detail-price s {
+    color: #9a9196;
+    font-size: 0.92rem;
+    font-weight: 600;
+}
+
+.product-detail-price strong {
+    color: #6545a5;
+    font-size: 1.15rem;
 }
 
 .product-summary hr {
@@ -2219,10 +2234,49 @@ a {
     align-items: center;
 }
 
-.product-description-copy p {
+.product-description-copy p,
+.rich-text p {
     color: #302b2f;
     line-height: 1.75;
 }
+
+.product-summary-desc {
+    margin-top: 0.35rem;
+}
+
+.product-summary-desc.rich-text p {
+    margin: 0 0 0.65rem;
+}
+
+.rich-text ul,
+.rich-text ol {
+    margin: 0.75rem 0 0.75rem 1.25rem;
+    color: #302b2f;
+    line-height: 1.7;
+}
+
+.rich-text li { margin: 0.25rem 0; }
+.rich-text strong,
+.rich-text b { font-weight: 700; }
+.rich-text em,
+.rich-text i { font-style: italic; }
+.rich-text u { text-decoration: underline; }
+.rich-text s { text-decoration: line-through; }
+.rich-text h1,
+.rich-text h2,
+.rich-text h3 {
+    color: #181518;
+    font-weight: 700;
+    line-height: 1.3;
+    margin: 0.75rem 0 0.4rem;
+}
+.rich-text h1 { font-size: 1.6rem; }
+.rich-text h2 { font-size: 1.3rem; }
+.rich-text h3 { font-size: 1.1rem; }
+.rich-text a { color: #6545a5; text-decoration: underline; }
+.rich-text .ql-align-center { text-align: center; }
+.rich-text .ql-align-right { text-align: right; }
+.rich-text .ql-align-justify { text-align: justify; }
 
 .product-tab-panel > img {
     width: 100%;
@@ -3259,7 +3313,19 @@ a {
 .shop-product-copy small { color: #6545a5; font-size: 0.63rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; }
 .shop-product-copy h3 { margin: 0.4rem 0; font-size: 1rem; line-height: 1.3; }
 .shop-product-copy h3 a:hover { color: #6545a5; }
-.shop-product-copy > strong { color: #6545a5; font-size: 0.88rem; }
+.shop-product-price {
+    display: inline-flex;
+    align-items: baseline;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 0.4rem;
+}
+.shop-product-price s {
+    color: #9a9196;
+    font-size: 0.78rem;
+    font-weight: 600;
+}
+.shop-product-price strong { color: #6545a5; font-size: 0.88rem; }
 
 .shop-empty {
     grid-column: 1 / -1;

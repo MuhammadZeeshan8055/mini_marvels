@@ -24,6 +24,29 @@
             },
         }
     </script>
+    <link href="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.snow.css" rel="stylesheet">
+    <style>
+        .mm-quill .ql-toolbar.ql-snow {
+            border: 1px solid #e2e8f0;
+            border-radius: 0.75rem 0.75rem 0 0;
+            background: #f8fafc;
+        }
+        .mm-quill .ql-container.ql-snow {
+            border: 1px solid #e2e8f0;
+            border-top: 0;
+            border-radius: 0 0 0.75rem 0.75rem;
+            min-height: 180px;
+            font-family: Fredoka, system-ui, sans-serif;
+            font-size: 0.95rem;
+        }
+        .mm-quill .ql-editor {
+            min-height: 160px;
+        }
+        .mm-quill .ql-editor.ql-blank::before {
+            color: #94a3b8;
+            font-style: normal;
+        }
+    </style>
     @livewireStyles
 </head>
 <body class="font-display bg-slate-100 text-slate-800 min-h-screen">
@@ -92,6 +115,7 @@
     </div>
 
     <style>[x-cloak]{display:none!important}</style>
+    <script src="https://cdn.jsdelivr.net/npm/quill@2.0.3/dist/quill.js"></script>
     @livewireScripts
 </body>
 </html>

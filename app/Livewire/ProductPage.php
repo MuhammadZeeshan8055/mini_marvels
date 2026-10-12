@@ -3,7 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
-use App\Models\ProductImage;
+use Illuminate\Support\Str;
 use Livewire\Component;
 
 class ProductPage extends Component
@@ -31,32 +31,21 @@ class ProductPage extends Component
             abort(404, 'No products found.');
         }
 
-        $colors = $productModel->images->map(fn (ProductImage $image, int $index) => [
-            'name' => $image->color_name ?: 'Color '.($index + 1),
-            'hex' => $image->color_hex ?: '#d5b08a',
-            'image' => $image->url(),
-        ])->values()->all();
-
-        if ($colors === []) {
-            $colors = [
-                [
-                    'name' => 'Original',
-                    'hex' => '#d5b08a',
-                    'image' => $productModel->imageUrl(),
-                ],
-            ];
-        }
+        $colors = $productModel->colorVariants();
 
         $product = [
             'name' => $productModel->name,
             'slug' => $productModel->slug,
             'category' => $productModel->category?->name ?? 'Toys',
             'age' => $productModel->age,
-            'price' => (float) $productModel->price,
-            'image' => $colors[0]['image'],
+            'price' => $productModel->salePrice(),
+            'official_price' => $productModel->onSale() ? $productModel->officialPrice() : null,
+            'on_sale' => $productModel->onSale(),
+            'image' => $colors[0]['image'] ?? $productModel->imageUrl(),
             'description' => $productModel->description,
             'stock' => $productModel->stock,
             'colors' => $colors,
+            'has_colors' => collect($colors)->contains(fn (array $c) => ! empty($c['has_color'])),
         ];
 
         $related = Product::query()
@@ -74,17 +63,34 @@ class ProductPage extends Component
                     'slug' => $item->slug,
                     'category' => $item->category?->name ?? 'Toys',
                     'age' => $item->age,
-                    'price' => (float) $item->price,
+                    'price' => $item->salePrice(),
+                    'official_price' => $item->onSale() ? $item->officialPrice() : null,
                     'image' => $colors[0]['image'] ?? $item->imageUrl(),
                     'colors' => $colors,
                 ];
             })
             ->all();
 
+        $pageTitle = $productModel->meta_title
+            ?: ($product['name'].' — Mini Marvels');
+
+        $pageDescription = $productModel->meta_description
+            ?: ($productModel->description
+                ? Str::limit(strip_tags($productModel->description), 155)
+                : 'Shop '.$product['name'].' at Mini Marvels.');
+
+        $ogImage = $product['image'];
+        if ($ogImage && ! str_starts_with($ogImage, 'http://') && ! str_starts_with($ogImage, 'https://')) {
+            $ogImage = url($ogImage);
+        }
+
         return view('livewire.product-page', compact('product', 'related'))
             ->layout('layouts.app', [
-                'title' => $product['name'].' — Mini Marvels',
-                'metaDescription' => 'Shop '.$product['name'].' at Mini Marvels.',
+                'title' => $pageTitle,
+                'metaDescription' => $pageDescription,
+                'metaKeywords' => $productModel->meta_keywords,
+                'ogType' => 'product',
+                'ogImage' => $ogImage,
             ]);
     }
 }

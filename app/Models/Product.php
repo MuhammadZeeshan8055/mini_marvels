@@ -14,7 +14,11 @@ class Product extends Model
         'name',
         'slug',
         'description',
+        'meta_title',
+        'meta_description',
+        'meta_keywords',
         'price',
+        'official_price',
         'image',
         'age',
         'stock',
@@ -26,10 +30,28 @@ class Product extends Model
     {
         return [
             'price' => 'decimal:2',
+            'official_price' => 'decimal:2',
             'stock' => 'integer',
             'is_featured' => 'boolean',
             'is_active' => 'boolean',
         ];
+    }
+
+    /** Sale price is stored in `price`. Official (compare-at) is optional. */
+    public function onSale(): bool
+    {
+        return $this->official_price !== null
+            && (float) $this->official_price > (float) $this->price;
+    }
+
+    public function salePrice(): float
+    {
+        return (float) $this->price;
+    }
+
+    public function officialPrice(): ?float
+    {
+        return $this->official_price !== null ? (float) $this->official_price : null;
     }
 
     public function category(): BelongsTo
@@ -80,8 +102,9 @@ class Product extends Model
         if ($images->isEmpty()) {
             return [
                 [
-                    'name' => 'Original',
-                    'hex' => '#d5b08a',
+                    'name' => null,
+                    'hex' => null,
+                    'has_color' => false,
                     'image' => $this->imageUrl(),
                 ],
             ];
@@ -90,9 +113,12 @@ class Product extends Model
         $list = [];
 
         foreach ($images as $image) {
+            $hasColor = filled($image->color_name) || filled($image->color_hex);
+
             $list[] = [
-                'name' => $image->color_name ?: 'Color',
-                'hex' => $image->color_hex ?: '#d5b08a',
+                'name' => $hasColor ? ($image->color_name ?: 'Color') : null,
+                'hex' => $hasColor ? ($image->color_hex ?: '#d5b08a') : null,
+                'has_color' => $hasColor,
                 'image' => $image->url(),
                 'is_main' => $this->image === $image->path,
             ];
@@ -107,10 +133,9 @@ class Product extends Model
             return $a['is_main'] ? -1 : 1;
         });
 
-        // Remove helper key before return
         foreach ($list as $i => $item) {
             unset($list[$i]['is_main']);
-            if ($list[$i]['name'] === 'Color') {
+            if ($list[$i]['has_color'] && ($list[$i]['name'] === 'Color' || $list[$i]['name'] === null)) {
                 $list[$i]['name'] = 'Color '.($i + 1);
             }
         }

@@ -4,8 +4,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
+    @if (! empty($metaKeywords))
+        <meta name="keywords" content="{{ $metaKeywords }}">
+    @endif
 
     <title>{{ $title ?? 'Mini Marvels' }}</title>
+
+    <meta property="og:title" content="{{ $title ?? 'Mini Marvels' }}">
+    <meta property="og:description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
+    <meta property="og:type" content="{{ $ogType ?? 'website' }}">
+    @if (! empty($ogImage))
+        <meta property="og:image" content="{{ $ogImage }}">
+    @endif
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="{{ $title ?? 'Mini Marvels' }}">
+    <meta name="twitter:description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
