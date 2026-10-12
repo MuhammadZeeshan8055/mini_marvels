@@ -24,7 +24,7 @@ class ShopPageTest extends TestCase
             ->assertDontSee('Stuffed Deer Toy')
             ->call('resetFilters')
             ->set('category', 'Learning Toys')
-            ->set('age', '9+ years')
+            ->set('age', '10+ Years')
             ->assertSee('Junior Science Set')
             ->assertDontSee('Funny Teddy');
     }
@@ -38,5 +38,19 @@ class ShopPageTest extends TestCase
             ->call('resetFilters')
             ->set('sort', 'price-high')
             ->assertSeeInOrder(['Junior Science Set', 'Creative Art Kit', 'Classic Board Game']);
+    }
+
+    public function test_age_link_opens_shop_with_matching_products(): void
+    {
+        $this->get('/')
+            ->assertOk()
+            ->assertSee(route('shop', ['age' => '5-7 Years']), false);
+
+        Livewire::withQueryParams(['age' => '5-7 Years'])
+            ->test(ShopPage::class)
+            ->assertSet('age', '5-7 Years')
+            ->assertSee('Push Ride On Car')
+            ->assertSee('Classic Board Game')
+            ->assertDontSee('Funny Teddy');
     }
 }

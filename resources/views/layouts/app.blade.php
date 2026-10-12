@@ -221,10 +221,28 @@
 
                         <h4 class="footer-col-gap">Social Media</h4>
                         <div class="footer-social">
-                            <a href="#" aria-label="X">X</a>
-                            <a href="#" aria-label="Instagram">Ig</a>
-                            <a href="#" aria-label="Facebook">Fb</a>
-                            <a href="#" aria-label="YouTube">Yt</a>
+                            <a href="#" aria-label="Facebook">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M13.5 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.6 1.6-1.6h1.8V4.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.4V11H7.1v3H10v8h3.5Z"/>
+                                </svg>
+                            </a>
+                            <a href="#" aria-label="TikTok">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M15.5 3c.3 1.8 1.4 2.9 3.2 3.2v3.1c-1.2 0-2.3-.4-3.2-1v6.1a5.4 5.4 0 1 1-4.7-5.3v3.2a2.3 2.3 0 1 0 1.5 2.1V3h3.2Z"/>
+                                </svg>
+                            </a>
+                            <a href="#" aria-label="Instagram">
+                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                                    <rect x="3" y="3" width="18" height="18" rx="5"/>
+                                    <circle cx="12" cy="12" r="4"/>
+                                    <circle class="footer-social-dot" cx="17.5" cy="6.5" r="1"/>
+                                </svg>
+                            </a>
+                            <a href="#" aria-label="YouTube">
+                                <svg viewBox="0 0 24 24" aria-hidden="true">
+                                    <path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15.2V8.8l5.5 3.2-5.5 3.2Z"/>
+                                </svg>
+                            </a>
                         </div>
                     </div>
 
@@ -255,15 +273,6 @@
         <div class="footer-bar">
             <div class="container footer-bar-inner">
                 <p>&copy; {{ date('Y') }} Mini Marvels. All Rights Reserved.</p>
-                <div class="footer-payments" aria-label="Payment methods">
-                    <span>Visa</span>
-                    <span>Mastercard</span>
-                    <span>PayPal</span>
-                    <span>Skrill</span>
-                    <span>Payoneer</span>
-                    <span>Amazon Pay</span>
-                    <span>Google Pay</span>
-                </div>
             </div>
         </div>
     </footer>

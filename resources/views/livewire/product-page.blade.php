@@ -1,4 +1,13 @@
-<div class="product-page" x-data="{ quantity: 1, tab: 'description' }">
+<div class="product-page" x-data="{
+    quantity: 1,
+    tab: 'description',
+    variants: @js($product['colors']),
+    selectedVariant: @js($product['colors'][0]),
+    selectVariant(variant) {
+        this.selectedVariant = variant;
+        this.$nextTick(() => document.querySelector('.product-main-swiper')?.swiper?.slideTo(0));
+    }
+}">
     <section class="shop-banner" aria-labelledby="shop-title">
         <span class="shop-banner-kid shop-banner-kid-left" aria-hidden="true">&#129490;</span>
         <span class="shop-banner-bee shop-banner-bee-left" aria-hidden="true">&#128029;</span>
@@ -24,7 +33,11 @@
                     <div class="swiper-wrapper">
                         @foreach ($galleryImages as $image)
                             <div class="swiper-slide" role="button" tabindex="0">
-                                <img src="{{ $image }}" alt="" width="120" height="120" loading="lazy" draggable="false">
+                                @if ($loop->first)
+                                    <img :src="selectedVariant.image" alt="" width="120" height="120" loading="lazy" draggable="false">
+                                @else
+                                    <img src="{{ $image }}" alt="" width="120" height="120" loading="lazy" draggable="false">
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -32,9 +45,13 @@
 
                 <div class="swiper product-main-swiper" aria-label="Product gallery">
                     <div class="swiper-wrapper">
-                        @foreach ($galleryImages as $index => $image)
+                        @foreach ($galleryImages as $image)
                             <div class="swiper-slide">
-                                <img src="{{ $image }}" alt="{{ $index === 0 ? $product['name'] : $product['name'].' alternate view' }}" width="720" height="720" draggable="false">
+                                @if ($loop->first)
+                                    <img :src="selectedVariant.image" :alt="'{{ addslashes($product['name']) }} in ' + selectedVariant.name" width="720" height="720" draggable="false">
+                                @else
+                                    <img src="{{ $image }}" alt="{{ $product['name'].' alternate view' }}" width="720" height="720" draggable="false">
+                                @endif
                             </div>
                         @endforeach
                     </div>
@@ -53,6 +70,24 @@
                     <span>11d : 10h : 31m : 33s</span>
                 </div>
 
+                <div class="product-colors">
+                    <strong>Color: <span x-text="selectedVariant.name"></span></strong>
+                    <div class="product-swatches" role="radiogroup" aria-label="Choose a color">
+                        <template x-for="variant in variants" :key="variant.name">
+                            <button
+                                type="button"
+                                class="product-swatch"
+                                :class="{ 'is-active': selectedVariant.name === variant.name }"
+                                :style="`--swatch-color: ${variant.hex}`"
+                                :aria-label="variant.name"
+                                :aria-checked="selectedVariant.name === variant.name"
+                                @click="selectVariant(variant)"
+                                role="radio"
+                            ></button>
+                        </template>
+                    </div>
+                </div>
+
                 <div class="product-actions">
                     <div class="quantity-picker" aria-label="Quantity">
                         <button type="button" @click="quantity = Math.max(1, quantity - 1)" aria-label="Decrease quantity">&minus;</button>
@@ -69,9 +104,6 @@
                     <li>&#8644; Shipping &amp; Return</li>
                 </ul>
 
-                <div class="product-payment-row" aria-label="Accepted payment methods">
-                    <span>VISA</span><span>Mastercard</span><span>PayPal</span><span>Skrill</span><span>G Pay</span>
-                </div>
                 <dl class="product-meta">
                     <div><dt>SKU:</dt><dd>MM-{{ sprintf('%04d', crc32($product['name']) % 10000) }}</dd></div>
                     <div><dt>Category:</dt><dd>{{ $product['category'] }}</dd></div>

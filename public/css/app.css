@@ -1657,6 +1657,23 @@ a {
     color: #fff;
 }
 
+.footer-social svg {
+    width: 17px;
+    height: 17px;
+    fill: currentColor;
+}
+
+.footer-social a[aria-label="Instagram"] svg {
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.8;
+}
+
+.footer-social a[aria-label="Instagram"] .footer-social-dot {
+    fill: currentColor;
+    stroke: none;
+}
+
 .footer-news-form {
     display: flex;
     align-items: center;
@@ -1732,23 +1749,6 @@ a {
     font-weight: 600;
 }
 
-.footer-payments {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    gap: 0.4rem;
-}
-
-.footer-payments span {
-    background: #fff;
-    border-radius: 4px;
-    padding: 0.25rem 0.45rem;
-    font-size: 0.65rem;
-    font-weight: 700;
-    color: #444;
-    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.08);
-}
-
 .swiper-pagination-bullet-active {
     background: var(--mm-plum) !important;
 }
@@ -1804,12 +1804,6 @@ a {
     .footer-grid {
         grid-template-columns: 1.35fr 1fr 1fr 1.15fr;
         gap: 2rem 1.5rem;
-    }
-
-    .footer-bar-inner {
-        flex-direction: row;
-        justify-content: space-between;
-        text-align: left;
     }
 
     .hero-cutie {
@@ -2088,6 +2082,39 @@ a {
     font-weight: 700;
 }
 
+.product-colors { margin: 1.3rem 0; }
+.product-colors > strong {
+    display: block;
+    margin-bottom: 0.65rem;
+    font-size: 0.78rem;
+}
+
+.product-colors > strong span { color: #655b62; font-weight: 600; }
+.product-swatches { display: flex; flex-wrap: wrap; gap: 0.65rem; }
+.product-swatch {
+    position: relative;
+    width: 30px;
+    height: 30px;
+    padding: 0;
+    border: 2px solid #fffaf1;
+    border-radius: 50%;
+    background: var(--swatch-color);
+    box-shadow: 0 0 0 1px #8c8389;
+    cursor: pointer;
+    transition: scale 160ms ease, box-shadow 160ms ease;
+}
+
+.product-swatch:hover { scale: 1.08; }
+.product-swatch.is-active { box-shadow: 0 0 0 2px #2d2830; }
+.product-swatch.is-active::after {
+    content: '';
+    position: absolute;
+    inset: 8px;
+    border-radius: 50%;
+    background: #fff;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
 .product-actions {
     display: flex;
     flex-wrap: wrap;
@@ -2151,23 +2178,6 @@ a {
     list-style: none;
     font-size: 0.8rem;
     font-weight: 600;
-}
-
-.product-payment-row {
-    display: flex;
-    flex-wrap: wrap;
-    gap: 0.35rem;
-    margin: 1.1rem 0;
-}
-
-.product-payment-row span {
-    padding: 0.2rem 0.35rem;
-    border-radius: 3px;
-    background: #fff;
-    color: #4b4650;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    font-size: 0.58rem;
-    font-weight: 800;
 }
 
 .product-meta { margin: 0; font-size: 0.78rem; }
@@ -2418,7 +2428,7 @@ a {
 }
 
 .cart-banner {
-    min-height: 205px;
+    min-height: 405px;
 }
 
 .cart-banner-art {

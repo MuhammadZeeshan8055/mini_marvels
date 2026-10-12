@@ -198,7 +198,7 @@
                 <p>Find the perfect collection for every stage of play.</p>
                 <div class="age-grid">
                     @foreach ($ages as $age)
-                        <a href="#products" class="age-card {{ $loop->first ? 'is-active' : '' }}">
+                        <a href="{{ route('shop', ['age' => $age['label']]) }}" class="age-card">
                             {{ $age['label'] }}
                         </a>
                     @endforeach
