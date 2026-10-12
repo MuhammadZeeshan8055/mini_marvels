@@ -3333,3 +3333,32 @@ a {
     .auth-doodle-squiggle { left: -8%; }
     .auth-doodle-sun { right: -5%; }
 }
+
+/* ===== Scroll reveal animations ===== */
+.scroll-reveal-card {
+    opacity: 0;
+    translate: 0 32px;
+    scale: 0.98;
+    transition:
+        opacity 650ms cubic-bezier(0.22, 1, 0.36, 1),
+        translate 650ms cubic-bezier(0.22, 1, 0.36, 1),
+        scale 650ms cubic-bezier(0.22, 1, 0.36, 1);
+    transition-delay: var(--reveal-delay, 0ms);
+    will-change: opacity, transform;
+}
+
+.scroll-reveal-card.is-revealed {
+    opacity: 1;
+    translate: 0 0;
+    scale: 1;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    .scroll-reveal-card,
+    .scroll-reveal-card.is-revealed {
+        opacity: 1;
+        translate: none;
+        scale: none;
+        transition: none;
+    }
+}

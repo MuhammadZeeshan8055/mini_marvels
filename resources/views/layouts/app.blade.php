@@ -338,6 +338,59 @@
                     thumbs: { swiper: productThumbs },
                 });
             }
+
+            const revealCardSelector = [
+                '.shop-product-card',
+                '.category-card',
+                '.age-card',
+                '.promo-card',
+                '.trust-card',
+                '.testimonial-card',
+                '.auth-card',
+                '.gift-card-note',
+            ].join(',');
+
+            const revealCards = () => {
+                const cards = [...document.querySelectorAll(revealCardSelector)]
+                    .filter((card) => !card.classList.contains('scroll-reveal-card'));
+
+                if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || !('IntersectionObserver' in window)) {
+                    cards.forEach((card) => card.classList.add('scroll-reveal-card', 'is-revealed'));
+                    return;
+                }
+
+                const observer = new IntersectionObserver((entries, currentObserver) => {
+                    entries.forEach((entry) => {
+                        if (!entry.isIntersecting) return;
+
+                        entry.target.classList.add('is-revealed');
+                        currentObserver.unobserve(entry.target);
+                    });
+                }, {
+                    threshold: 0.12,
+                    rootMargin: '0px 0px -40px',
+                });
+
+                cards.forEach((card) => {
+                    const siblings = [...card.parentElement.children].filter((item) => item.matches(revealCardSelector));
+                    const staggerIndex = Math.min(Math.max(siblings.indexOf(card), 0), 5);
+
+                    card.style.setProperty('--reveal-delay', `${staggerIndex * 85}ms`);
+                    card.classList.add('scroll-reveal-card');
+                    observer.observe(card);
+                });
+            };
+
+            revealCards();
+            document.addEventListener('livewire:navigated', revealCards);
+
+            const pageContent = document.querySelector('main');
+            if (pageContent) {
+                new MutationObserver(revealCards).observe(pageContent, {
+                    childList: true,
+                    subtree: true,
+                });
+            }
         });
     </script>
 
