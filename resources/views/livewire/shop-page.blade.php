@@ -66,12 +66,12 @@
                             </fieldset>
 
                             <div class="shop-filter-group shop-price-filter">
-                                <label for="max-price">Price up to <strong>${{ $maxPrice }}</strong></label>
-                                <input id="max-price" type="range" min="10" max="80" step="5" wire:model.live="maxPrice">
-                                <div><span>$10</span><span>$80</span></div>
+                                <label for="max-price">Price up to <strong>Rs {{ number_format((float) $maxPrice, 0) }}</strong></label>
+                                <input id="max-price" type="range" min="200" max="10000" step="100" wire:model.live="maxPrice">
+                                <div><span>Rs 200</span><span>Rs 10,000</span></div>
                             </div>
 
-                            @if ($search || $category !== 'All' || $age !== 'All' || $maxPrice < 80 || $sort !== 'featured')
+                            @if ($search || $category !== 'All' || $age !== 'All' || $maxPrice < 10000 || $sort !== 'featured')
                                 <button type="button" class="clear-filters" wire:click="resetFilters">Clear all filters</button>
                             @endif
                         </div>

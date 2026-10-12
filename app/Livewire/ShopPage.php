@@ -17,14 +17,14 @@ class ShopPage extends Component
     #[Url]
     public string $age = 'All';
 
-    public int $maxPrice = 80;
+    public int $maxPrice = 10000;
 
     public string $sort = 'featured';
 
     public function resetFilters(): void
     {
         $this->reset('search', 'category', 'age', 'sort');
-        $this->maxPrice = 80;
+        $this->maxPrice = 10000;
     }
 
     public function getFilteredProductsProperty(): Collection
@@ -88,7 +88,7 @@ class ShopPage extends Component
 
         return view('livewire.shop-page', [
             'categories' => $categoryNames,
-            'ages' => ['0-2 Years', '3-4 Years', '5-7 Years', '8-10 Years', '10+ Years'],
+            'ages' => ['0-2 Years', '3-4 Years', '3-8 Years', '5-7 Years', '8-10 Years', '10+ Years'],
         ])->layout('layouts.app', [
             'title' => 'Shop Toys — Mini Marvels',
             'metaDescription' => 'Explore toys for every age and imagination at Mini Marvels.',

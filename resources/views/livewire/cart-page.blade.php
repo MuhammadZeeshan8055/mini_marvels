@@ -44,7 +44,7 @@
                                             <a href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($item['name'])]) }}">{{ $item['name'] }}</a>
                                         </div>
                                     </td>
-                                    <td data-label="Price">${{ number_format($item['price'], 2) }}</td>
+                                    <td data-label="Price">Rs {{ number_format($item['price'], 0) }}</td>
                                     <td data-label="Quantity">
                                         <div class="cart-quantity" aria-label="Quantity for {{ $item['name'] }}">
                                             <button type="button" wire:click="changeQuantity({{ $item['id'] }}, -1)" aria-label="Decrease quantity">−</button>
@@ -52,7 +52,7 @@
                                             <button type="button" wire:click="changeQuantity({{ $item['id'] }}, 1)" aria-label="Increase quantity">+</button>
                                         </div>
                                     </td>
-                                    <td data-label="Subtotal">${{ number_format($item['price'] * $item['quantity'], 2) }}</td>
+                                    <td data-label="Subtotal">Rs {{ number_format($item['price'] * $item['quantity'], 0) }}</td>
                                     <td>
                                         <button class="cart-remove" type="button" wire:click="removeItem({{ $item['id'] }})" aria-label="Remove {{ $item['name'] }}">×</button>
                                     </td>
@@ -89,9 +89,9 @@
             <section class="cart-panel cart-totals" aria-labelledby="cart-totals-title">
                 <h2 id="cart-totals-title">Cart totals</h2>
                 <dl>
-                    <div><dt>Subtotal</dt><dd>${{ number_format($this->subtotal, 2) }}</dd></div>
+                    <div><dt>Subtotal</dt><dd>Rs {{ number_format($this->subtotal, 0) }}</dd></div>
                     @if ($couponApplied)
-                        <div><dt>Discount</dt><dd>−${{ number_format($this->discount, 2) }}</dd></div>
+                        <div><dt>Discount</dt><dd>−Rs {{ number_format($this->discount, 0) }}</dd></div>
                     @endif
                     <div class="shipping-row">
                         <dt>Shipment</dt>
@@ -105,7 +105,7 @@
                             @endif
                         </dd>
                     </div>
-                    <div class="total-row"><dt>Total</dt><dd>${{ number_format($this->total, 2) }}</dd></div>
+                    <div class="total-row"><dt>Total</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
                 </dl>
                 @if (count($items))
                     <a href="{{ route('checkout') }}" class="cart-pill checkout-button">Proceed To Checkout</a>

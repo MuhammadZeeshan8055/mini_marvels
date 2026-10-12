@@ -60,9 +60,9 @@
                 <div class="product-detail-stars" aria-label="5 out of 5 stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
                 <div class="product-detail-price">
                     @if (! empty($product['on_sale']) && ! empty($product['official_price']))
-                        <s>${{ number_format($product['official_price'], 2) }}</s>
+                        <s>Rs {{ number_format($product['official_price'], 0) }}</s>
                     @endif
-                    <strong>${{ number_format($product['price'], 2) }}</strong>
+                    <strong>Rs {{ number_format($product['price'], 0) }}</strong>
                 </div>
                 <hr>
                 <div class="product-summary-desc rich-text">

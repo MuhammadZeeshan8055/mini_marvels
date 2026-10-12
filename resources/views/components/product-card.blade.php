@@ -93,9 +93,9 @@
         <h3><a href="{{ $productUrl }}">{{ $name }}</a></h3>
         <div class="shop-product-price">
             @if ($officialPrice !== null && (float) $officialPrice > (float) $price)
-                <s>${{ number_format((float) $officialPrice, 2) }}</s>
+                <s>Rs {{ number_format((float) $officialPrice, 0) }}</s>
             @endif
-            <strong>${{ number_format((float) $price, 2) }}</strong>
+            <strong>Rs {{ number_format((float) $price, 0) }}</strong>
         </div>
     </div>
 </article>

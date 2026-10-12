@@ -339,10 +339,10 @@
                             <td class="px-4 py-3">{{ $product->category?->name }}</td>
                             <td class="px-4 py-3">
                                 @if ($product->onSale())
-                                    <span class="text-slate-400 line-through text-xs">${{ number_format($product->official_price, 2) }}</span>
-                                    <span class="block font-medium text-plum">${{ number_format($product->price, 2) }}</span>
+                                    <span class="text-slate-400 line-through text-xs">Rs {{ number_format($product->official_price, 0) }}</span>
+                                    <span class="block font-medium text-plum">Rs {{ number_format($product->price, 0) }}</span>
                                 @else
-                                    ${{ number_format($product->price, 2) }}
+                                    Rs {{ number_format($product->price, 0) }}
                                 @endif
                             </td>
                             <td class="px-4 py-3">{{ $product->stock }}</td>

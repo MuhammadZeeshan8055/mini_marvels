@@ -84,14 +84,14 @@
                                         <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" width="52" height="52">
                                         <span>{{ $item['name'] }} <b>× {{ $item['quantity'] }}</b></span>
                                     </div>
-                                    <strong>${{ number_format($item['price'] * $item['quantity'], 2) }}</strong>
+                                    <strong>Rs {{ number_format($item['price'] * $item['quantity'], 0) }}</strong>
                                 </li>
                             @endforeach
                         </ul>
                         <dl>
-                            <div><dt>Subtotal</dt><dd>${{ number_format($this->total, 2) }}</dd></div>
+                            <div><dt>Subtotal</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
                             <div><dt>Shipping</dt><dd>Free Shipping</dd></div>
-                            <div class="checkout-total"><dt>Total</dt><dd>${{ number_format($this->total, 2) }}</dd></div>
+                            <div class="checkout-total"><dt>Total</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
                         </dl>
                         <div class="checkout-payment">
                             <span class="payment-dot" aria-hidden="true"></span>

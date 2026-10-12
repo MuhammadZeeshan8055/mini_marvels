@@ -103,18 +103,13 @@ class HomePage extends Component
 
     private function categoryImages(): array
     {
-        return [
-            'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1516627145497-ae6968895b74?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1588072432836-e10032774350?w=600&h=600&fit=crop',
-            'https://images.unsplash.com/photo-1610890716171-6b1bb98ffd09?w=600&h=600&fit=crop',
-        ];
+        $fallback = 'https://placehold.co/600x600/FFE8F0/5D3E9F?text=Toys';
+
+        return Category::orderBy('name')->get()->map(function (Category $category) use ($fallback) {
+            $product = $category->products()->whereNotNull('image')->active()->first();
+
+            return $product?->imageUrl() ?? $fallback;
+        })->all();
     }
 
     private function products(): array
@@ -149,9 +144,9 @@ class HomePage extends Component
     private function promos(): array
     {
         return [
-            ['title' => 'All That Your Child Wish For', 'subtitle' => 'Outdoor Toys', 'price' => 'Starts @ $5.00', 'bg' => '#F8BCC7', 'text' => '#171418', 'image' => 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=700&fit=crop'],
-            ['title' => 'Colorful Friction Powered Toys', 'subtitle' => 'Up to 50% Off On', 'price' => 'Only $19.99', 'bg' => '#A9E28F', 'text' => '#171418', 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&h=700&fit=crop'],
-            ['title' => "Let's Improve Kids Motor Skills", 'subtitle' => 'Learning Fun', 'price' => 'Only $15.55', 'bg' => '#6544A8', 'text' => '#FFFFFF', 'image' => 'https://images.unsplash.com/photo-1599443015574-be5fe8a05783?w=600&h=700&fit=crop'],
+            ['title' => 'All That Your Child Wish For', 'subtitle' => 'Outdoor Toys', 'price' => 'Starts @ Rs 350', 'bg' => '#F8BCC7', 'text' => '#171418', 'image' => 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=600&h=700&fit=crop'],
+            ['title' => 'Colorful Friction Powered Toys', 'subtitle' => 'Up to 50% Off On', 'price' => 'From Rs 299', 'bg' => '#A9E28F', 'text' => '#171418', 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=600&h=700&fit=crop'],
+            ['title' => "Let's Improve Kids Motor Skills", 'subtitle' => 'Learning Fun', 'price' => 'From Rs 410', 'bg' => '#6544A8', 'text' => '#FFFFFF', 'image' => 'https://images.unsplash.com/photo-1599443015574-be5fe8a05783?w=600&h=700&fit=crop'],
         ];
     }
 
