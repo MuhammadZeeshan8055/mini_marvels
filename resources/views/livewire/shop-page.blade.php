@@ -95,11 +95,13 @@
                         @forelse ($this->filteredProducts as $product)
                             <x-product-card
                                 :name="$product['name']"
+                                :slug="$product['slug'] ?? null"
                                 :category="$product['category']"
                                 :age="$product['age']"
                                 :price="$product['price']"
                                 :image="$product['image']"
-                                wire:key="shop-{{ \Illuminate\Support\Str::slug($product['name']) }}"
+                                :colors="$product['colors'] ?? []"
+                                wire:key="shop-{{ $product['slug'] ?? \Illuminate\Support\Str::slug($product['name']) }}"
                             />
                         @empty
                             <div class="shop-empty">

@@ -2,10 +2,12 @@
     quantity: 1,
     tab: 'description',
     variants: @js($product['colors']),
-    selectedVariant: @js($product['colors'][0]),
-    selectVariant(variant) {
-        this.selectedVariant = variant;
-        this.$nextTick(() => document.querySelector('.product-main-swiper')?.swiper?.slideTo(0));
+    selectedIndex: 0,
+    get selectedVariant() {
+        return this.variants[this.selectedIndex] || this.variants[0];
+    },
+    selectVariant(index) {
+        this.selectedIndex = index;
     }
 }">
     <section class="shop-banner" aria-labelledby="shop-title">
@@ -27,34 +29,29 @@
 
     <section class="product-detail-section">
         <div class="container product-detail-grid">
-            @php($galleryImages = [$product['image'], ...array_column(array_slice($related, 0, 3), 'image')])
             <div class="product-gallery">
-                <div class="swiper product-thumb-swiper" aria-label="Product image thumbnails">
-                    <div class="swiper-wrapper">
-                        @foreach ($galleryImages as $image)
-                            <div class="swiper-slide" role="button" tabindex="0">
-                                @if ($loop->first)
-                                    <img :src="selectedVariant.image" alt="" width="120" height="120" loading="lazy" draggable="false">
-                                @else
-                                    <img src="{{ $image }}" alt="" width="120" height="120" loading="lazy" draggable="false">
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
+                <div class="product-thumb-list" aria-label="Product image thumbnails">
+                    @foreach ($product['colors'] as $index => $variant)
+                        <button
+                            type="button"
+                            class="product-thumb"
+                            :class="{ 'is-active': selectedIndex === {{ $index }} }"
+                            @click="selectVariant({{ $index }})"
+                            aria-label="{{ $variant['name'] }}"
+                        >
+                            <img src="{{ $variant['image'] }}" alt="{{ $variant['name'] }}" width="120" height="120" loading="lazy" draggable="false">
+                        </button>
+                    @endforeach
                 </div>
 
-                <div class="swiper product-main-swiper" aria-label="Product gallery">
-                    <div class="swiper-wrapper">
-                        @foreach ($galleryImages as $image)
-                            <div class="swiper-slide">
-                                @if ($loop->first)
-                                    <img :src="selectedVariant.image" :alt="'{{ addslashes($product['name']) }} in ' + selectedVariant.name" width="720" height="720" draggable="false">
-                                @else
-                                    <img src="{{ $image }}" alt="{{ $product['name'].' alternate view' }}" width="720" height="720" draggable="false">
-                                @endif
-                            </div>
-                        @endforeach
-                    </div>
+                <div class="product-main-image" aria-label="Product gallery">
+                    <img
+                        :src="selectedVariant.image"
+                        :alt="'{{ addslashes($product['name']) }} - ' + selectedVariant.name"
+                        width="720"
+                        height="720"
+                        draggable="false"
+                    >
                 </div>
             </div>
 
@@ -63,25 +60,25 @@
                 <div class="product-detail-stars" aria-label="5 out of 5 stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
                 <div class="product-detail-price">${{ number_format($product['price'], 2) }}</div>
                 <hr>
-                <p>A playful, thoughtfully selected toy made for busy little hands and big imaginations. Durable, colorful, and ready for everyday adventures.</p>
+                <p>{{ $product['description'] ?: 'A playful, thoughtfully selected toy made for busy little hands and big imaginations.' }}</p>
 
                 <div class="deal-countdown">
                     <strong>Hurry up! Deal Ends in:</strong>
                     <span>11d : 10h : 31m : 33s</span>
                 </div>
 
-                <div class="product-colors">
+                <div class="product-colors" x-show="variants.length > 0">
                     <strong>Color: <span x-text="selectedVariant.name"></span></strong>
                     <div class="product-swatches" role="radiogroup" aria-label="Choose a color">
-                        <template x-for="variant in variants" :key="variant.name">
+                        <template x-for="(variant, index) in variants" :key="'swatch-' + index">
                             <button
                                 type="button"
                                 class="product-swatch"
-                                :class="{ 'is-active': selectedVariant.name === variant.name }"
+                                :class="{ 'is-active': selectedIndex === index }"
                                 :style="`--swatch-color: ${variant.hex}`"
                                 :aria-label="variant.name"
-                                :aria-checked="selectedVariant.name === variant.name"
-                                @click="selectVariant(variant)"
+                                :aria-checked="selectedIndex === index"
+                                @click="selectVariant(index)"
                                 role="radio"
                             ></button>
                         </template>
@@ -180,7 +177,15 @@
             <h2>Related Products</h2>
             <div class="product-grid related-product-grid">
                 @foreach ($related as $item)
-                    <x-product-card :name="$item['name']" :category="$item['category']" :age="$item['age']" :price="$item['price']" :image="$item['image']" />
+                    <x-product-card
+                        :name="$item['name']"
+                        :slug="$item['slug'] ?? null"
+                        :category="$item['category']"
+                        :age="$item['age']"
+                        :price="$item['price']"
+                        :image="$item['image']"
+                        :colors="$item['colors'] ?? []"
+                    />
                 @endforeach
             </div>
         </div>

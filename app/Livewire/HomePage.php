@@ -2,6 +2,8 @@
 
 namespace App\Livewire;
 
+use App\Models\Category;
+use App\Models\Product;
 use Livewire\Component;
 
 class HomePage extends Component
@@ -22,6 +24,21 @@ class HomePage extends Component
             'title' => 'Mini Marvels — Kids Toys & Deals',
             'metaDescription' => 'Shop eco-friendly games and toys that foster creativity. Deals on toddler toys, puzzles, learning toys and more at Mini Marvels.',
         ]);
+    }
+
+    private function mapProduct(Product $product): array
+    {
+        $colors = $product->colorVariants();
+
+        return [
+            'name' => $product->name,
+            'slug' => $product->slug,
+            'category' => $product->category?->name ?? 'Toys',
+            'age' => $product->age,
+            'price' => (float) $product->price,
+            'image' => $colors[0]['image'] ?? $product->imageUrl(),
+            'colors' => $colors,
+        ];
     }
 
     private function slides(): array
@@ -56,15 +73,17 @@ class HomePage extends Component
 
     private function categories(): array
     {
+        $fromDb = Category::orderBy('name')->get()->map(fn (Category $category) => [
+            'name' => $category->name,
+            'emoji' => $category->emoji ?: '🧸',
+        ])->all();
+
+        if ($fromDb !== []) {
+            return $fromDb;
+        }
+
         return [
             ['name' => 'Playsets', 'emoji' => '🏰'],
-            ['name' => 'Action Figures', 'emoji' => '🦸'],
-            ['name' => 'Toddler Toys', 'emoji' => '🧸'],
-            ['name' => 'Building Sets', 'emoji' => '🧱'],
-            ['name' => 'Puzzles', 'emoji' => '🧩'],
-            ['name' => 'Kids Books', 'emoji' => '📚'],
-            ['name' => 'Kids Electronics', 'emoji' => '🎮'],
-            ['name' => 'Outdoor Toys', 'emoji' => '⚽'],
             ['name' => 'Learning Toys', 'emoji' => '🧠'],
             ['name' => 'Games', 'emoji' => '🎲'],
         ];
@@ -99,26 +118,31 @@ class HomePage extends Component
 
     private function products(): array
     {
-        return [
-            ['name' => 'Stuffed Deer Toy', 'category' => 'Stuffed Dolls', 'age' => '3-4 Years', 'price' => 21.55, 'image' => 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=700&h=700&fit=crop'],
-            ['name' => 'Wooden Rocking Horse', 'category' => 'Wood Toys', 'age' => '3-4 Years', 'price' => 15.60, 'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=700&h=700&fit=crop'],
-            ['name' => 'Funny Teddy', 'category' => 'Learning Toys', 'age' => '0-2 Years', 'price' => 20.50, 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=700&h=700&fit=crop'],
-            ['name' => 'Woolen Baby Girl', 'category' => 'Stuffed Dolls', 'age' => '3-4 Years', 'price' => 21.70, 'image' => 'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=700&h=700&fit=crop'],
-            ['name' => 'Fancy Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0-2 Years', 'price' => 20.85, 'image' => 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=700&h=700&fit=crop'],
-            ['name' => 'Push Ride On Car', 'category' => 'Play Toys', 'age' => '5-7 Years', 'price' => 25.25, 'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=700&h=700&fit=crop'],
-            ['name' => 'Baby Stroller Toy', 'category' => 'Play Toys', 'age' => '0-2 Years', 'price' => 24.85, 'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=700&h=700&fit=crop'],
-            ['name' => 'Handmade Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0-2 Years', 'price' => 23.60, 'image' => 'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=700&h=700&fit=crop'],
-        ];
+        return Product::query()
+            ->with(['category', 'images'])
+            ->active()
+            ->orderByDesc('is_featured')
+            ->orderBy('name')
+            ->take(8)
+            ->get()
+            ->map(fn (Product $product) => $this->mapProduct($product))
+            ->all();
     }
 
     private function featured(): array
     {
-        return [
-            ['name' => 'Push Ride On Car', 'category' => 'Play Toys', 'age' => '5-7 Years', 'price' => 25.25, 'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=700&h=700&fit=crop'],
-            ['name' => 'Baby Stroller Toy', 'category' => 'Play Toys', 'age' => '0-2 Years', 'price' => 24.85, 'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=700&h=700&fit=crop'],
-            ['name' => 'Building Blocks', 'category' => 'Play Toys', 'age' => '3-4 Years', 'price' => 15.85, 'image' => 'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=700&h=700&fit=crop'],
-            ['name' => 'Toddler Truck Toy', 'category' => 'Play Toys', 'age' => '3-4 Years', 'price' => 14.65, 'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=700&h=700&fit=crop'],
-        ];
+        $featured = Product::query()
+            ->with(['category', 'images'])
+            ->active()
+            ->featured()
+            ->take(4)
+            ->get();
+
+        if ($featured->isEmpty()) {
+            $featured = Product::query()->with(['category', 'images'])->active()->take(4)->get();
+        }
+
+        return $featured->map(fn (Product $product) => $this->mapProduct($product))->all();
     }
 
     private function promos(): array

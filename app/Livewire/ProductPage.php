@@ -2,7 +2,8 @@
 
 namespace App\Livewire;
 
-use Illuminate\Support\Str;
+use App\Models\Product;
+use App\Models\ProductImage;
 use Livewire\Component;
 
 class ProductPage extends Component
@@ -11,22 +12,73 @@ class ProductPage extends Component
 
     public function mount(?string $slug = null): void
     {
-        $this->slug = $slug ?: 'push-ride-on-car';
+        $this->slug = $slug ?: '';
     }
 
     public function render()
     {
-        $products = $this->products();
-        $product = collect($products)->first(
-            fn (array $item) => Str::slug($item['name']) === $this->slug
-        ) ?? $products[5];
+        $productModel = Product::query()
+            ->with(['category', 'images'])
+            ->active()
+            ->when($this->slug !== '', fn ($q) => $q->where('slug', $this->slug))
+            ->first();
 
-        $product['colors'] = $this->colors($product);
+        if (! $productModel) {
+            $productModel = Product::query()->with(['category', 'images'])->active()->first();
+        }
 
-        $related = collect($products)
-            ->reject(fn (array $item) => $item['name'] === $product['name'])
+        if (! $productModel) {
+            abort(404, 'No products found.');
+        }
+
+        $colors = $productModel->images->map(fn (ProductImage $image, int $index) => [
+            'name' => $image->color_name ?: 'Color '.($index + 1),
+            'hex' => $image->color_hex ?: '#d5b08a',
+            'image' => $image->url(),
+        ])->values()->all();
+
+        if ($colors === []) {
+            $colors = [
+                [
+                    'name' => 'Original',
+                    'hex' => '#d5b08a',
+                    'image' => $productModel->imageUrl(),
+                ],
+            ];
+        }
+
+        $product = [
+            'name' => $productModel->name,
+            'slug' => $productModel->slug,
+            'category' => $productModel->category?->name ?? 'Toys',
+            'age' => $productModel->age,
+            'price' => (float) $productModel->price,
+            'image' => $colors[0]['image'],
+            'description' => $productModel->description,
+            'stock' => $productModel->stock,
+            'colors' => $colors,
+        ];
+
+        $related = Product::query()
+            ->with(['category', 'images'])
+            ->active()
+            ->where('id', '!=', $productModel->id)
+            ->when($productModel->category_id, fn ($q) => $q->where('category_id', $productModel->category_id))
             ->take(4)
-            ->values()
+            ->get()
+            ->map(function (Product $item) {
+                $colors = $item->colorVariants();
+
+                return [
+                    'name' => $item->name,
+                    'slug' => $item->slug,
+                    'category' => $item->category?->name ?? 'Toys',
+                    'age' => $item->age,
+                    'price' => (float) $item->price,
+                    'image' => $colors[0]['image'] ?? $item->imageUrl(),
+                    'colors' => $colors,
+                ];
+            })
             ->all();
 
         return view('livewire.product-page', compact('product', 'related'))
@@ -34,39 +86,5 @@ class ProductPage extends Component
                 'title' => $product['name'].' — Mini Marvels',
                 'metaDescription' => 'Shop '.$product['name'].' at Mini Marvels.',
             ]);
-    }
-
-    private function colors(array $product): array
-    {
-        return $product['colors'] ?? [
-            ['name' => 'Original', 'hex' => '#d5b08a', 'image' => $product['image']],
-        ];
-    }
-
-    private function products(): array
-    {
-        return [
-            ['name' => 'Stuffed Deer Toy', 'category' => 'Stuffed Dolls', 'age' => '3-4 Years', 'price' => 21.55, 'image' => 'https://images.unsplash.com/photo-1559454403-b8fb88521f11?w=900&h=900&fit=crop'],
-            [
-                'name' => 'Wooden Rocking Horse',
-                'category' => 'Wood Toys',
-                'age' => '3-4 Years',
-                'price' => 15.60,
-                'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=900&h=900&fit=crop',
-                'colors' => [
-                    [
-                        'name' => 'Red',
-                        'hex' => '#d92720',
-                        'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=900&h=900&fit=crop',
-                    ],
-                ],
-            ],
-            ['name' => 'Funny Teddy', 'category' => 'Learning Toys', 'age' => '0-2 Years', 'price' => 20.50, 'image' => 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=900&h=900&fit=crop'],
-            ['name' => 'Woolen Baby Girl', 'category' => 'Stuffed Dolls', 'age' => '3-4 Years', 'price' => 21.70, 'image' => 'https://images.unsplash.com/photo-1618842676088-c4d48a6a7c9d?w=900&h=900&fit=crop'],
-            ['name' => 'Fancy Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0-2 Years', 'price' => 20.85, 'image' => 'https://images.unsplash.com/photo-1545558014-8692077e9b5c?w=900&h=900&fit=crop'],
-            ['name' => 'Push Ride On Car', 'category' => 'Play Toys', 'age' => '5-7 Years', 'price' => 25.25, 'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=900&h=900&fit=crop'],
-            ['name' => 'Baby Stroller Toy', 'category' => 'Play Toys', 'age' => '0-2 Years', 'price' => 24.85, 'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=900&h=900&fit=crop'],
-            ['name' => 'Handmade Teddy Bear', 'category' => 'Stuffed Dolls', 'age' => '0-2 Years', 'price' => 23.60, 'image' => 'https://images.unsplash.com/photo-1598880940080-ff9a29891b85?w=900&h=900&fit=crop'],
-        ];
     }
 }

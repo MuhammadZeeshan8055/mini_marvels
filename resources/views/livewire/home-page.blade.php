@@ -220,10 +220,12 @@
             @foreach ($products as $product)
                 <x-product-card
                     :name="$product['name']"
+                    :slug="$product['slug'] ?? null"
                     :category="$product['category']"
                     :age="$product['age']"
                     :price="$product['price']"
                     :image="$product['image']"
+                    :colors="$product['colors'] ?? []"
                 />
             @endforeach
         </div>
@@ -282,10 +284,12 @@
             @foreach ($featured as $product)
                 <x-product-card
                     :name="$product['name']"
+                    :slug="$product['slug'] ?? null"
                     :category="$product['category']"
                     :age="$product['age']"
                     :price="$product['price']"
                     :image="$product['image']"
+                    :colors="$product['colors'] ?? []"
                 />
             @endforeach
         </div>

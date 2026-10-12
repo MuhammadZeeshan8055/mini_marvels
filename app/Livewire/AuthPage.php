@@ -42,6 +42,10 @@ class AuthPage extends Component
 
         session()->regenerate();
 
+        if (Auth::user()->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
         return redirect()->route('account');
     }
 
@@ -60,6 +64,7 @@ class AuthPage extends Component
             'name' => $validated['name'],
             'email' => $validated['email'],
             'password' => $validated['password'],
+            'is_admin' => false,
         ]);
 
         Auth::login($user);
