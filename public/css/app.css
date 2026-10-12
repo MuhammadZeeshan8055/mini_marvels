@@ -1973,6 +1973,8 @@ a {
     min-width: 0;
 }
 
+.product-gallery.is-single { grid-template-columns: minmax(0, 1fr); }
+
 .product-thumb-list {
     display: flex;
     flex-direction: column;

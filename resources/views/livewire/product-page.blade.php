@@ -29,20 +29,22 @@
 
     <section class="product-detail-section">
         <div class="container product-detail-grid">
-            <div class="product-gallery">
-                <div class="product-thumb-list" aria-label="Product image thumbnails">
-                    @foreach ($product['colors'] as $index => $variant)
-                        <button
-                            type="button"
-                            class="product-thumb"
-                            :class="{ 'is-active': selectedIndex === {{ $index }} }"
-                            @click="selectVariant({{ $index }})"
-                            aria-label="{{ $variant['name'] }}"
-                        >
-                            <img src="{{ $variant['image'] }}" alt="{{ $variant['name'] }}" width="120" height="120" loading="lazy" draggable="false">
-                        </button>
-                    @endforeach
-                </div>
+            <div class="product-gallery {{ count($product['colors']) === 1 ? 'is-single' : '' }}">
+                @if (count($product['colors']) > 1)
+                    <div class="product-thumb-list" aria-label="Product image thumbnails">
+                        @foreach ($product['colors'] as $index => $variant)
+                            <button
+                                type="button"
+                                class="product-thumb"
+                                :class="{ 'is-active': selectedIndex === {{ $index }} }"
+                                @click="selectVariant({{ $index }})"
+                                aria-label="{{ $variant['name'] }}"
+                            >
+                                <img src="{{ $variant['image'] }}" alt="{{ $variant['name'] }}" width="120" height="120" loading="lazy" draggable="false">
+                            </button>
+                        @endforeach
+                    </div>
+                @endif
 
                 <div class="product-main-image" aria-label="Product gallery">
                     <img
