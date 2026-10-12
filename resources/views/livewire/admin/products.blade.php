@@ -1,15 +1,37 @@
 <div class="space-y-6">
-    <div class="bg-white rounded-2xl p-5 shadow-sm border border-slate-100">
-        <div class="flex flex-wrap items-center justify-between gap-3 mb-4">
-            <h2 class="font-semibold text-plum">
+    {{-- Toggle form: click header to open/close --}}
+    <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">
+        <button
+            type="button"
+            wire:click="toggleForm"
+            class="w-full flex items-center justify-between gap-3 px-5 py-4 text-left hover:bg-slate-50"
+        >
+            <span class="font-semibold text-plum">
                 {{ $editingId ? 'Edit Product' : 'Add Product' }}
-            </h2>
-            @if ($editingId)
-                <button type="button" wire:click="resetForm" class="text-sm text-slate-500 hover:underline">Cancel edit</button>
-            @endif
-        </div>
+            </span>
+            <span class="flex items-center gap-3">
+                @if ($editingId)
+                    <span
+                        class="text-sm text-slate-500 hover:underline"
+                        wire:click.stop="resetForm"
+                    >Cancel edit</span>
+                @endif
+                <svg
+                    class="w-5 h-5 text-plum transition-transform {{ $showForm ? 'rotate-180' : '' }}"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2"
+                    aria-hidden="true"
+                >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M6 9l6 6 6-6"/>
+                </svg>
+            </span>
+        </button>
 
-        <form wire:submit="save" class="grid md:grid-cols-2 gap-4">
+        @if ($showForm)
+        <div class="px-5 pb-5 border-t border-slate-100">
+        <form wire:submit="save" class="grid md:grid-cols-2 gap-4 pt-4">
             <div>
                 <label class="block text-sm mb-1">Name</label>
                 <input type="text" wire:model="name" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30">
@@ -154,6 +176,8 @@
                 </button>
             </div>
         </form>
+        </div>
+        @endif
     </div>
 
     <div class="bg-white rounded-2xl shadow-sm border border-slate-100 overflow-hidden">

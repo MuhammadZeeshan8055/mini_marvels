@@ -44,13 +44,22 @@ class Products extends Component
 
     public string $search = '';
 
+    public bool $showForm = false;
+
     public function updatingSearch(): void
     {
         $this->resetPage();
     }
 
+    public function toggleForm(): void
+    {
+        $this->showForm = ! $this->showForm;
+    }
+
     public function edit(int $id): void
     {
+        $this->showForm = true;
+
         $product = Product::with('images')->findOrFail($id);
 
         $this->editingId = $product->id;
@@ -117,6 +126,7 @@ class Products extends Component
 
         $this->is_active = true;
         $this->stock = '0';
+        $this->showForm = false;
         $this->resetValidation();
     }
 
@@ -238,6 +248,7 @@ class Products extends Component
 
         $this->search = '';
         $this->new_images = [];
+        $this->showForm = true;
 
         // Stay on edit so gallery + color fields show after save
         $this->edit($product->id);
