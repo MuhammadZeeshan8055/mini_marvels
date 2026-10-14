@@ -117,7 +117,7 @@ class Product extends Model
 
             $list[] = [
                 'name' => $hasColor ? ($image->color_name ?: 'Color') : null,
-                'hex' => $hasColor ? ($image->color_hex ?: '#d5b08a') : null,
+                'hex' => $hasColor ? $image->swatchHex() : null,
                 'has_color' => $hasColor,
                 'image' => $image->url(),
                 'is_main' => $this->image === $image->path,

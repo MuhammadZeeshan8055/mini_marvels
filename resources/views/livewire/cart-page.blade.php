@@ -18,12 +18,7 @@
 
     <section class="cart-content" aria-label="Shopping cart">
         <div class="cart-container">
-            <div class="gift-card-note">
-                <span>Got a gift card from a loved one?</span>
-                <a href="#coupon">Use it here!</a>
-            </div>
-
-            @if (count($items))
+            @if (count($this->items))
                 <div class="cart-table-wrap">
                     <table class="cart-table">
                         <thead>
@@ -36,25 +31,30 @@
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($items as $item)
-                                <tr wire:key="cart-item-{{ $item['id'] }}">
+                            @foreach ($this->items as $item)
+                                <tr wire:key="cart-item-{{ $item['key'] }}">
                                     <td data-label="Product">
                                         <div class="cart-product">
                                             <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" width="74" height="74">
-                                            <a href="{{ route('product.show', ['slug' => \Illuminate\Support\Str::slug($item['name'])]) }}">{{ $item['name'] }}</a>
+                                            <div class="cart-product-meta">
+                                                <a href="{{ route('product.show', ['slug' => $item['slug'] ?? \Illuminate\Support\Str::slug($item['name'])]) }}">{{ $item['name'] }}</a>
+                                                @if (! empty($item['color']))
+                                                    <span class="cart-item-color">Color: {{ $item['color'] }}</span>
+                                                @endif
+                                            </div>
                                         </div>
                                     </td>
                                     <td data-label="Price">Rs {{ number_format($item['price'], 0) }}</td>
                                     <td data-label="Quantity">
                                         <div class="cart-quantity" aria-label="Quantity for {{ $item['name'] }}">
-                                            <button type="button" wire:click="changeQuantity({{ $item['id'] }}, -1)" aria-label="Decrease quantity">−</button>
+                                            <button type="button" wire:click="changeQuantity(@js($item['key']), -1)" aria-label="Decrease quantity">−</button>
                                             <span aria-live="polite">{{ $item['quantity'] }}</span>
-                                            <button type="button" wire:click="changeQuantity({{ $item['id'] }}, 1)" aria-label="Increase quantity">+</button>
+                                            <button type="button" wire:click="changeQuantity(@js($item['key']), 1)" aria-label="Increase quantity">+</button>
                                         </div>
                                     </td>
                                     <td data-label="Subtotal">Rs {{ number_format($item['price'] * $item['quantity'], 0) }}</td>
                                     <td>
-                                        <button class="cart-remove" type="button" wire:click="removeItem({{ $item['id'] }})" aria-label="Remove {{ $item['name'] }}">×</button>
+                                        <button class="cart-remove" type="button" wire:click="removeItem(@js($item['key']))" aria-label="Remove {{ $item['name'] }}">×</button>
                                     </td>
                                 </tr>
                             @endforeach
@@ -98,7 +98,7 @@
                         <dd>
                             <strong>Free Shipping</strong>
                             <span>Shipping To</span>
-                            <b>Tamil Nadu.</b>
+                            <b>Pakistan.</b>
                             <button type="button" class="cart-pill change-address" wire:click="$toggle('showAddress')">Change Address</button>
                             @if ($showAddress)
                                 <span class="address-note">Delivery location can be updated during checkout.</span>
@@ -107,7 +107,7 @@
                     </div>
                     <div class="total-row"><dt>Total</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
                 </dl>
-                @if (count($items))
+                @if (count($this->items))
                     <a href="{{ route('checkout') }}" class="cart-pill checkout-button">Proceed To Checkout</a>
                 @endif
             </section>

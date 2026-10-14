@@ -115,7 +115,7 @@
                         @foreach ($gallery as $index => $item)
                             <div
                                 class="flex gap-3 items-start border rounded-xl p-3 {{ !empty($item['is_main']) ? 'border-plum bg-plum/5' : 'border-slate-200' }}"
-                                wire:key="gallery-{{ $item['id'] }}"
+                                wire:key="gallery-card-{{ $item['id'] }}"
                             >
                                 <div class="flex flex-col gap-1 shrink-0">
                                     <button
@@ -147,19 +147,30 @@
                                     @if (!empty($item['has_color']))
                                         <input
                                             type="text"
-                                            wire:model="gallery.{{ $index }}.color_name"
+                                            id="gallery-color-name-{{ $item['id'] }}"
+                                            name="gallery_color_name_{{ $item['id'] }}"
+                                            wire:model.blur="colorNames.{{ $item['id'] }}"
+                                            wire:key="gallery-color-name-{{ $item['id'] }}"
+                                            autocomplete="off"
                                             class="w-full rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                                             placeholder="Color name"
                                         >
-                                        <div class="flex items-center gap-2">
+                                        <div class="flex items-center gap-2" wire:key="gallery-color-hex-wrap-{{ $item['id'] }}">
                                             <input
                                                 type="color"
-                                                wire:model="gallery.{{ $index }}.color_hex"
+                                                id="gallery-color-picker-{{ $item['id'] }}"
+                                                name="gallery_color_picker_{{ $item['id'] }}"
+                                                wire:model.live="colorHexes.{{ $item['id'] }}"
+                                                wire:key="gallery-color-picker-{{ $item['id'] }}"
                                                 class="h-9 w-12 rounded border border-slate-200 p-0.5"
                                             >
                                             <input
                                                 type="text"
-                                                wire:model="gallery.{{ $index }}.color_hex"
+                                                id="gallery-color-hex-{{ $item['id'] }}"
+                                                name="gallery_color_hex_{{ $item['id'] }}"
+                                                wire:model.blur="colorHexes.{{ $item['id'] }}"
+                                                wire:key="gallery-color-hex-{{ $item['id'] }}"
+                                                autocomplete="off"
                                                 class="flex-1 rounded-lg border border-slate-200 px-2 py-1.5 text-sm"
                                                 placeholder="#hex"
                                             >

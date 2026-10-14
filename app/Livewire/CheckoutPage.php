@@ -2,6 +2,12 @@
 
 namespace App\Livewire;
 
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Product;
+use App\Services\Cart;
+use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 use Livewire\Component;
 
 class CheckoutPage extends Component
@@ -22,20 +28,20 @@ class CheckoutPage extends Component
 
     public string $orderNumber = '';
 
-    public array $items = [
-        [
-            'name' => 'Light Weight Baby Stroller',
-            'quantity' => 1,
-            'price' => 24.85,
-            'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=160&h=160&fit=crop',
-        ],
-        [
-            'name' => 'Wooden Rocking Horse',
-            'quantity' => 1,
-            'price' => 15.60,
-            'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=160&h=160&fit=crop',
-        ],
-    ];
+    public function mount(): void
+    {
+        if (Cart::isEmpty() && ! $this->orderPlaced) {
+            $this->redirect(route('cart'), navigate: true);
+
+            return;
+        }
+
+        if (Auth::check()) {
+            $user = Auth::user();
+            $this->name = $user->name ?? '';
+            $this->email = $user->email ?? '';
+        }
+    }
 
     protected function rules(): array
     {
@@ -61,17 +67,94 @@ class CheckoutPage extends Component
 
     public function placeOrder(): void
     {
+        if (Cart::isEmpty()) {
+            $this->redirect(route('cart'), navigate: true);
+
+            return;
+        }
+
         $this->validate();
 
-        $this->orderNumber = 'MM-'.now()->format('ymd').'-'.random_int(1000, 9999);
+        $items = Cart::items();
+        $subtotal = Cart::subtotal();
+        $discount = Cart::discount();
+        $total = Cart::total();
+        $coupon = Cart::coupon();
+
+        $order = DB::transaction(function () use ($items, $subtotal, $discount, $total, $coupon) {
+            $order = Order::create([
+                'order_number' => $this->generateOrderNumber(),
+                'user_id' => Auth::id(),
+                'customer_name' => $this->name,
+                'customer_email' => $this->email,
+                'customer_phone' => $this->phone,
+                'shipping_address' => $this->address,
+                'note' => $this->note ?: null,
+                'coupon_code' => $coupon,
+                'subtotal' => $subtotal,
+                'discount' => $discount,
+                'total' => $total,
+                'payment_method' => 'cod',
+                'status' => 'pending',
+            ]);
+
+            foreach ($items as $item) {
+                OrderItem::create([
+                    'order_id' => $order->id,
+                    'product_id' => $item['id'],
+                    'product_name' => $item['name'],
+                    'product_slug' => $item['slug'] ?? null,
+                    'color' => $item['color'] ?? null,
+                    'image' => $item['image'] ?? null,
+                    'unit_price' => $item['price'],
+                    'quantity' => $item['quantity'],
+                    'line_total' => round($item['price'] * $item['quantity'], 2),
+                ]);
+
+                $product = Product::query()->find($item['id']);
+
+                if ($product && $product->stock > 0) {
+                    $product->decrement('stock', min($item['quantity'], $product->stock));
+                }
+            }
+
+            return $order;
+        });
+
+        Cart::clear();
+        $this->dispatch('cart-updated');
+
+        $this->orderNumber = $order->order_number;
         $this->orderPlaced = true;
+    }
+
+    protected function generateOrderNumber(): string
+    {
+        do {
+            $number = 'MM-'.now()->format('ymd').'-'.random_int(1000, 9999);
+        } while (Order::query()->where('order_number', $number)->exists());
+
+        return $number;
+    }
+
+    public function getItemsProperty(): array
+    {
+        return Cart::items();
+    }
+
+    public function getSubtotalProperty(): float
+    {
+        return Cart::subtotal();
+    }
+
+    public function getDiscountProperty(): float
+    {
+        return Cart::discount();
     }
 
     public function getTotalProperty(): float
     {
-        return collect($this->items)->sum(
-            fn (array $item) => $item['price'] * $item['quantity']
-        );
+        return Cart::total();
     }
 
     public function render()

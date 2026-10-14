@@ -2,6 +2,7 @@
 
 use App\Livewire\Admin\Categories as AdminCategories;
 use App\Livewire\Admin\Dashboard as AdminDashboard;
+use App\Livewire\Admin\Orders as AdminOrders;
 use App\Livewire\Admin\Products as AdminProducts;
 use App\Livewire\AuthPage;
 use App\Livewire\CartPage;
@@ -32,6 +33,7 @@ Route::post('/logout', function () {
 
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', AdminDashboard::class)->name('dashboard');
+    Route::get('/orders', AdminOrders::class)->name('orders');
     Route::get('/categories', AdminCategories::class)->name('categories');
     Route::get('/products', AdminProducts::class)->name('products');
 });

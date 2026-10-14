@@ -1,15 +1,9 @@
-<div class="product-page" x-data="{
-    quantity: 1,
-    tab: 'description',
-    variants: @js($product['colors']),
-    selectedIndex: 0,
-    get selectedVariant() {
-        return this.variants[this.selectedIndex] || this.variants[0];
-    },
-    selectVariant(index) {
-        this.selectedIndex = index;
-    }
-}">
+@php
+    $selectedVariant = $product['colors'][$selectedVariantIndex] ?? $product['colors'][0] ?? null;
+    $selectedImage = $selectedVariant['image'] ?? $product['image'];
+    $selectedColorName = $selectedVariant['name'] ?? null;
+@endphp
+<div class="product-page" x-data="{ tab: 'description' }">
     <section class="shop-banner" aria-labelledby="shop-title">
         <span class="shop-banner-kid shop-banner-kid-left" aria-hidden="true">&#129490;</span>
         <span class="shop-banner-bee shop-banner-bee-left" aria-hidden="true">&#128029;</span>
@@ -35,21 +29,22 @@
                         @foreach ($product['colors'] as $index => $variant)
                             <button
                                 type="button"
-                                class="product-thumb"
-                                :class="{ 'is-active': selectedIndex === {{ $index }} }"
-                                @click="selectVariant({{ $index }})"
-                                aria-label="{{ $variant['name'] }}"
+                                class="product-thumb {{ $selectedVariantIndex === $index ? 'is-active' : '' }}"
+                                wire:click="selectVariant({{ $index }})"
+                                wire:key="thumb-{{ $index }}"
+                                aria-label="{{ $variant['name'] ?? 'Image '.($index + 1) }}"
+                                aria-pressed="{{ $selectedVariantIndex === $index ? 'true' : 'false' }}"
                             >
-                                <img src="{{ $variant['image'] }}" alt="{{ $variant['name'] }}" width="120" height="120" loading="lazy" draggable="false">
+                                <img src="{{ $variant['image'] }}" alt="{{ $variant['name'] ?? $product['name'] }}" width="120" height="120" loading="lazy" draggable="false">
                             </button>
                         @endforeach
                     </div>
                 @endif
 
-                <div class="product-main-image" aria-label="Product gallery">
+                <div class="product-main-image" aria-label="Product gallery" wire:key="main-image-{{ $selectedVariantIndex }}">
                     <img
-                        :src="selectedVariant.image"
-                        :alt="'{{ addslashes($product['name']) }} - ' + selectedVariant.name"
+                        src="{{ $selectedImage }}"
+                        alt="{{ $product['name'] }}{{ $selectedColorName ? ' - '.$selectedColorName : '' }}"
                         width="720"
                         height="720"
                         draggable="false"
@@ -81,35 +76,50 @@
                 </div>
 
                 @if (! empty($product['has_colors']))
-                    <div class="product-colors" x-show="variants.some(v => v.has_color)">
-                        <strong>Color: <span x-text="selectedVariant.name || '—'"></span></strong>
+                    <div class="product-colors">
+                        <strong>Color: <span>{{ $selectedColorName ?: '—' }}</span></strong>
                         <div class="product-swatches" role="radiogroup" aria-label="Choose a color">
-                            <template x-for="(variant, index) in variants" :key="'swatch-' + index">
+                            @foreach ($product['colors'] as $index => $variant)
+                                @continue(empty($variant['has_color']))
                                 <button
                                     type="button"
-                                    class="product-swatch"
-                                    x-show="variant.has_color"
-                                    :class="{ 'is-active': selectedIndex === index }"
-                                    :style="`--swatch-color: ${variant.hex || '#d5b08a'}`"
-                                    :aria-label="variant.name || 'Color'"
-                                    :aria-checked="selectedIndex === index"
-                                    @click="selectVariant(index)"
+                                    class="product-swatch {{ $selectedVariantIndex === $index ? 'is-active' : '' }}"
+                                    style="--swatch-color: {{ $variant['hex'] ?: '#6b7280' }}"
+                                    wire:click="selectVariant({{ $index }})"
+                                    wire:key="swatch-{{ $index }}"
+                                    aria-label="{{ $variant['name'] ?: 'Color' }}"
+                                    aria-checked="{{ $selectedVariantIndex === $index ? 'true' : 'false' }}"
                                     role="radio"
                                 ></button>
-                            </template>
+                            @endforeach
                         </div>
                     </div>
                 @endif
 
                 <div class="product-actions">
                     <div class="quantity-picker" aria-label="Quantity">
-                        <button type="button" @click="quantity = Math.max(1, quantity - 1)" aria-label="Decrease quantity">&minus;</button>
-                        <span x-text="quantity">1</span>
-                        <button type="button" @click="quantity++" aria-label="Increase quantity">+</button>
+                        <button type="button" wire:click="decreaseQuantity" aria-label="Decrease quantity">&minus;</button>
+                        <span aria-live="polite">{{ $quantity }}</span>
+                        <button type="button" wire:click="increaseQuantity" aria-label="Increase quantity">+</button>
                     </div>
-                    <button type="button" class="product-add-button">Add To Cart</button>
+                    <button
+                        type="button"
+                        class="product-add-button"
+                        wire:click="addToCart"
+                        wire:loading.attr="disabled"
+                        wire:target="addToCart"
+                        @disabled($product['stock'] < 1)
+                    >
+                        <span wire:loading.remove wire:target="addToCart">
+                            {{ $product['stock'] < 1 ? 'Out of Stock' : 'Add To Cart' }}
+                        </span>
+                        <span wire:loading wire:target="addToCart">Adding…</span>
+                    </button>
                     <button type="button" class="product-wishlist" aria-label="Add to wishlist">&#9825;</button>
                 </div>
+                @if ($addedMessage)
+                    <p class="product-cart-feedback" role="status" aria-live="polite">{{ $addedMessage }}</p>
+                @endif
 
                 <ul class="product-perks">
                     <li>&#9678; Free worldwide shipping on orders over $200</li>

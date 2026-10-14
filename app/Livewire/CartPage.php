@@ -2,27 +2,11 @@
 
 namespace App\Livewire;
 
+use App\Services\Cart;
 use Livewire\Component;
 
 class CartPage extends Component
 {
-    public array $items = [
-        [
-            'id' => 1,
-            'name' => 'Light Weight Baby Stroller',
-            'price' => 24.85,
-            'quantity' => 1,
-            'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=180&h=180&fit=crop',
-        ],
-        [
-            'id' => 2,
-            'name' => 'Wooden Rocking Horse',
-            'price' => 15.60,
-            'quantity' => 1,
-            'image' => 'https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=180&h=180&fit=crop',
-        ],
-    ];
-
     public string $coupon = '';
 
     public string $couponMessage = '';
@@ -31,29 +15,41 @@ class CartPage extends Component
 
     public bool $showAddress = false;
 
-    public function changeQuantity(int $id, int $amount): void
+    public function mount(): void
     {
-        foreach ($this->items as &$item) {
-            if ($item['id'] === $id) {
-                $item['quantity'] = max(1, $item['quantity'] + $amount);
-                break;
-            }
+        $this->coupon = Cart::coupon() ?? '';
+        $this->couponApplied = Cart::coupon() === 'CUTIE10';
+
+        if ($this->couponApplied) {
+            $this->couponMessage = 'Coupon applied — 10% off!';
         }
     }
 
-    public function removeItem(int $id): void
+    public function changeQuantity(string $key, int $amount): void
     {
-        $this->items = array_values(array_filter(
-            $this->items,
-            fn (array $item) => $item['id'] !== $id
-        ));
+        $item = collect(Cart::items())->firstWhere('key', $key);
+
+        if (! $item) {
+            return;
+        }
+
+        Cart::updateQuantity($key, max(1, $item['quantity'] + $amount));
+        $this->dispatch('cart-updated');
+    }
+
+    public function removeItem(string $key): void
+    {
+        Cart::remove($key);
+        $this->dispatch('cart-updated');
     }
 
     public function applyCoupon(): void
     {
-        if (strtoupper(trim($this->coupon)) === 'CUTIE10') {
+        if (Cart::applyCoupon($this->coupon)) {
             $this->couponApplied = true;
             $this->couponMessage = 'Coupon applied — 10% off!';
+            $this->coupon = 'CUTIE10';
+
             return;
         }
 
@@ -61,21 +57,24 @@ class CartPage extends Component
         $this->couponMessage = 'Try CUTIE10 for 10% off.';
     }
 
+    public function getItemsProperty(): array
+    {
+        return Cart::items();
+    }
+
     public function getSubtotalProperty(): float
     {
-        return collect($this->items)->sum(
-            fn (array $item) => $item['price'] * $item['quantity']
-        );
+        return Cart::subtotal();
     }
 
     public function getDiscountProperty(): float
     {
-        return $this->couponApplied ? round($this->subtotal * 0.1, 2) : 0;
+        return Cart::discount();
     }
 
     public function getTotalProperty(): float
     {
-        return $this->subtotal - $this->discount;
+        return Cart::total();
     }
 
     public function render()

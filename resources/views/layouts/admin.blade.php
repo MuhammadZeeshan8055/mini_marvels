@@ -90,6 +90,7 @@
 
             <nav class="flex flex-wrap lg:flex-col gap-2 text-sm font-medium">
                 <a href="{{ route('admin.dashboard') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.dashboard') ? 'bg-white/20' : '' }}">Dashboard</a>
+                <a href="{{ route('admin.orders') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.orders') ? 'bg-white/20' : '' }}">Orders</a>
                 <a href="{{ route('admin.categories') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.categories') ? 'bg-white/20' : '' }}">Categories</a>
                 <a href="{{ route('admin.products') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.products') ? 'bg-white/20' : '' }}">Products</a>
                 <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-white/10" target="_blank">View Store</a>

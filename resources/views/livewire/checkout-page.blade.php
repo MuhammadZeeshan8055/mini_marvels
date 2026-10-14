@@ -25,9 +25,9 @@
                     <span aria-hidden="true">✓</span>
                     <p class="checkout-kicker">Thank you, {{ $name }}!</p>
                     <h2>Your order has been placed.</h2>
-                    <p>We’ll send the order details to <strong>{{ $email }}</strong>.</p>
+                    <!-- <p>We’ll send the order details to <strong>{{ $email }}</strong>.</p> -->
                     <div class="order-number">Order number <strong>{{ $orderNumber }}</strong></div>
-                    <a href="{{ route('home') }}#products" class="cart-pill">Continue Shopping</a>
+                    <a href="{{ route('shop') }}" class="cart-pill">Continue Shopping</a>
                 </div>
             @else
                 <div class="checkout-heading">
@@ -78,18 +78,27 @@
                         <h2 id="order-summary-title">Your order</h2>
                         <div class="checkout-summary-head"><span>Product</span><span>Subtotal</span></div>
                         <ul>
-                            @foreach ($items as $item)
-                                <li>
+                            @foreach ($this->items as $item)
+                                <li wire:key="checkout-item-{{ $item['key'] }}">
                                     <div class="checkout-product">
                                         <img src="{{ $item['image'] }}" alt="{{ $item['name'] }}" width="52" height="52">
-                                        <span>{{ $item['name'] }} <b>× {{ $item['quantity'] }}</b></span>
+                                        <span>
+                                            {{ $item['name'] }}
+                                            @if (! empty($item['color']))
+                                                <i>{{ $item['color'] }}</i>
+                                            @endif
+                                            <b>× {{ $item['quantity'] }}</b>
+                                        </span>
                                     </div>
                                     <strong>Rs {{ number_format($item['price'] * $item['quantity'], 0) }}</strong>
                                 </li>
                             @endforeach
                         </ul>
                         <dl>
-                            <div><dt>Subtotal</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
+                            <div><dt>Subtotal</dt><dd>Rs {{ number_format($this->subtotal, 0) }}</dd></div>
+                            @if ($this->discount > 0)
+                                <div><dt>Discount</dt><dd>−Rs {{ number_format($this->discount, 0) }}</dd></div>
+                            @endif
                             <div><dt>Shipping</dt><dd>Free Shipping</dd></div>
                             <div class="checkout-total"><dt>Total</dt><dd>Rs {{ number_format($this->total, 0) }}</dd></div>
                         </dl>

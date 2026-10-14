@@ -47,6 +47,12 @@ class Products extends Component
     /** @var array<int, array{id:int,url:string,color_name:string,color_hex:string}> */
     public array $gallery = [];
 
+    /** Color fields keyed by image id so list reordering cannot cross-bind inputs. @var array<int|string, string> */
+    public array $colorNames = [];
+
+    /** @var array<int|string, string> */
+    public array $colorHexes = [];
+
     /** @var array<int, mixed> */
     public $new_images = [];
 
@@ -173,6 +179,8 @@ class Products extends Component
             'is_featured',
             'image_url',
             'gallery',
+            'colorNames',
+            'colorHexes',
             'new_images',
         ]);
 
@@ -199,7 +207,8 @@ class Products extends Component
             $image->delete();
         }
 
-        unset($this->gallery[$index]);
+        $imageId = (int) ($item['id'] ?? 0);
+        unset($this->gallery[$index], $this->colorNames[$imageId], $this->colorHexes[$imageId]);
         $this->gallery = array_values($this->gallery);
         $this->persistGalleryOrder();
 
@@ -226,11 +235,13 @@ class Products extends Component
             'is_featured' => ['boolean'],
             'is_active' => ['boolean'],
             'image_url' => ['nullable', 'string', 'max:500'],
-            'gallery.*.color_name' => ['nullable', 'string', 'max:50'],
-            'gallery.*.color_hex' => ['nullable', 'string', 'max:20'],
+            'colorNames.*' => ['nullable', 'string', 'max:50'],
+            'colorHexes.*' => ['nullable', 'string', 'max:20'],
             'new_images' => ['nullable', 'array'],
             'new_images.*' => ['nullable', 'image', 'max:4096'],
         ]);
+
+        $this->syncGalleryColorsFromMaps();
 
         // Keep files before anything else clears them
         $uploads = collect($this->new_images ?? [])
@@ -273,15 +284,19 @@ class Products extends Component
         }
 
         foreach ($this->gallery as $order => $item) {
+            $imageId = (int) $item['id'];
             $hasColor = ! empty($item['has_color']);
-            $colorName = trim((string) ($item['color_name'] ?? ''));
-            $colorHex = trim((string) ($item['color_hex'] ?? ''));
+            $colorName = trim((string) ($this->colorNames[$imageId] ?? $item['color_name'] ?? ''));
+            $colorHex = ProductImage::normalizeHex(
+                (string) ($this->colorHexes[$imageId] ?? $item['color_hex'] ?? ''),
+                $colorName
+            );
 
-            ProductImage::where('id', $item['id'])
+            ProductImage::where('id', $imageId)
                 ->where('product_id', $product->id)
                 ->update([
                     'color_name' => $hasColor && $colorName !== '' ? $colorName : null,
-                    'color_hex' => $hasColor && $colorHex !== '' ? $colorHex : null,
+                    'color_hex' => $hasColor ? $colorHex : null,
                     'sort_order' => $order,
                 ]);
         }
@@ -367,9 +382,15 @@ class Products extends Component
             return;
         }
 
-        $this->gallery[$index]['has_color'] = false;
-        $this->gallery[$index]['color_name'] = '';
-        $this->gallery[$index]['color_hex'] = '';
+        $imageId = (int) $this->gallery[$index]['id'];
+        $gallery = $this->gallery;
+        $gallery[$index]['has_color'] = false;
+        $gallery[$index]['color_name'] = '';
+        $gallery[$index]['color_hex'] = '';
+        $this->gallery = $gallery;
+
+        $this->colorNames[$imageId] = '';
+        $this->colorHexes[$imageId] = '';
     }
 
     public function enableImageColor(int $index): void
@@ -378,22 +399,52 @@ class Products extends Component
             return;
         }
 
-        $this->gallery[$index]['has_color'] = true;
-        if (($this->gallery[$index]['color_name'] ?? '') === '') {
-            $this->gallery[$index]['color_name'] = 'Color';
+        $imageId = (int) $this->gallery[$index]['id'];
+        $gallery = $this->gallery;
+        $gallery[$index]['has_color'] = true;
+
+        $name = trim((string) ($this->colorNames[$imageId] ?? $gallery[$index]['color_name'] ?? ''));
+        $hex = trim((string) ($this->colorHexes[$imageId] ?? $gallery[$index]['color_hex'] ?? ''));
+
+        if ($name === '') {
+            $name = 'Color';
         }
-        if (($this->gallery[$index]['color_hex'] ?? '') === '') {
-            $this->gallery[$index]['color_hex'] = '#d5b08a';
+        if ($hex === '') {
+            $hex = '#d5b08a';
         }
+
+        $gallery[$index]['color_name'] = $name;
+        $gallery[$index]['color_hex'] = $hex;
+        $this->gallery = $gallery;
+        $this->colorNames[$imageId] = $name;
+        $this->colorHexes[$imageId] = $hex;
+    }
+
+    private function syncGalleryColorsFromMaps(): void
+    {
+        $gallery = $this->gallery;
+
+        foreach ($gallery as $index => $item) {
+            $imageId = (int) $item['id'];
+            $gallery[$index]['color_name'] = (string) ($this->colorNames[$imageId] ?? $item['color_name'] ?? '');
+            $gallery[$index]['color_hex'] = (string) ($this->colorHexes[$imageId] ?? $item['color_hex'] ?? '');
+        }
+
+        $this->gallery = $gallery;
     }
 
     private function loadGallery(Product $product): void
     {
+        $names = [];
+        $hexes = [];
+
         $this->gallery = $product->images
             ->sortBy('sort_order')
             ->values()
-            ->map(function (ProductImage $image) use ($product) {
+            ->map(function (ProductImage $image) use ($product, &$names, &$hexes) {
                 $hasColor = filled($image->color_name) || filled($image->color_hex);
+                $names[$image->id] = $image->color_name ?? '';
+                $hexes[$image->id] = $image->color_hex ?? '';
 
                 return [
                     'id' => $image->id,
@@ -406,6 +457,9 @@ class Products extends Component
                 ];
             })
             ->all();
+
+        $this->colorNames = $names;
+        $this->colorHexes = $hexes;
     }
 
     private function cleanedDescription(): ?string

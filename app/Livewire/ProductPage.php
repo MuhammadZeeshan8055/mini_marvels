@@ -3,6 +3,7 @@
 namespace App\Livewire;
 
 use App\Models\Product;
+use App\Services\Cart;
 use Illuminate\Support\Str;
 use Livewire\Component;
 
@@ -10,9 +11,70 @@ class ProductPage extends Component
 {
     public string $slug = '';
 
+    public ?int $productId = null;
+
+    public int $selectedVariantIndex = 0;
+
+    public int $quantity = 1;
+
+    public string $addedMessage = '';
+
     public function mount(?string $slug = null): void
     {
         $this->slug = $slug ?: '';
+
+        $product = Product::query()
+            ->active()
+            ->when($this->slug !== '', fn ($q) => $q->where('slug', $this->slug))
+            ->first();
+
+        if (! $product) {
+            $product = Product::query()->active()->first();
+        }
+
+        $this->productId = $product?->id;
+    }
+
+    public function selectVariant(int $index): void
+    {
+        $this->selectedVariantIndex = max(0, $index);
+        $this->addedMessage = '';
+    }
+
+    public function decreaseQuantity(): void
+    {
+        $this->quantity = max(1, $this->quantity - 1);
+    }
+
+    public function increaseQuantity(): void
+    {
+        $this->quantity++;
+    }
+
+    public function addToCart(): void
+    {
+        $product = Product::query()->with('images')->active()->find($this->productId);
+
+        if (! $product) {
+            return;
+        }
+
+        if ($product->stock < 1) {
+            $this->addedMessage = 'Sorry, this item is out of stock.';
+
+            return;
+        }
+
+        $variants = $product->colorVariants();
+        $variant = $variants[$this->selectedVariantIndex] ?? $variants[0] ?? null;
+
+        Cart::add($product, max(1, $this->quantity), $variant);
+        $this->dispatch('cart-updated');
+
+        $color = $variant['name'] ?? null;
+        $this->addedMessage = $color
+            ? "Added {$color} to cart!"
+            : 'Added to cart!';
     }
 
     public function render()
@@ -20,7 +82,8 @@ class ProductPage extends Component
         $productModel = Product::query()
             ->with(['category', 'images'])
             ->active()
-            ->when($this->slug !== '', fn ($q) => $q->where('slug', $this->slug))
+            ->when($this->productId, fn ($q) => $q->where('id', $this->productId))
+            ->when(! $this->productId && $this->slug !== '', fn ($q) => $q->where('slug', $this->slug))
             ->first();
 
         if (! $productModel) {
@@ -31,9 +94,16 @@ class ProductPage extends Component
             abort(404, 'No products found.');
         }
 
+        $this->productId = $productModel->id;
+
         $colors = $productModel->colorVariants();
 
+        if ($this->selectedVariantIndex >= count($colors)) {
+            $this->selectedVariantIndex = 0;
+        }
+
         $product = [
+            'id' => $productModel->id,
             'name' => $productModel->name,
             'slug' => $productModel->slug,
             'category' => $productModel->category?->name ?? 'Toys',

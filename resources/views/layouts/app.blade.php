@@ -62,7 +62,7 @@
     </div>
 
     {{-- Main header --}}
-    <header class="site-header" x-data="{ open: false, cartOpen: false }" @click.outside="open = false; cartOpen = false" @keydown.escape.window="open = false; cartOpen = false">
+    <header class="site-header" x-data="{ open: false }" @keydown.escape.window="open = false">
         <div class="header-inner">
             <div class="flex items-center gap-2">
                 <button type="button" class="menu-toggle icon-btn" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" aria-label="Toggle menu">
@@ -91,12 +91,7 @@
                     </svg>
                 </a>
 
-                <button type="button" class="icon-btn" @click="cartOpen = !cartOpen" :aria-expanded="cartOpen" aria-controls="header-cart" aria-label="Open cart">
-                    <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M6 8h12l-1 11H7L6 8z"/><path stroke-linecap="round" d="M9 8a3 3 0 0 1 6 0"/>
-                    </svg>
-                    <span class="badge">2</span>
-                </button>
+                @livewire('header-cart')
 
                 <a href="#wishlist" class="icon-btn" aria-label="Wishlist">
                     <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
@@ -106,34 +101,6 @@
                 </a>
             </div>
         </div>
-
-        <aside id="header-cart" class="header-cart" :class="{ 'open': cartOpen }" aria-label="Shopping cart">
-            <div class="header-cart-item">
-                <button type="button" class="header-cart-remove" aria-label="Remove Light Weight Baby Stroller">&times;</button>
-                <div class="header-cart-copy">
-                    <strong>Light Weight<br>Baby Stroller</strong>
-                    <span>1 &times; $24.85</span>
-                </div>
-                <img src="https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=180&h=180&fit=crop" alt="Light Weight Baby Stroller" width="88" height="88" loading="lazy">
-            </div>
-
-            <div class="header-cart-item">
-                <button type="button" class="header-cart-remove" aria-label="Remove Wooden Rocking Horse">&times;</button>
-                <div class="header-cart-copy">
-                    <strong>Wooden Rocking<br>Horse</strong>
-                    <span>1 &times; $15.60</span>
-                </div>
-                <img src="https://images.unsplash.com/photo-1594787318286-3d835c1d207f?w=180&h=180&fit=crop" alt="Wooden Rocking Horse" width="88" height="88" loading="lazy">
-            </div>
-
-            <div class="header-cart-total">
-                <strong>Subtotal:</strong>
-                <span>$40.45</span>
-            </div>
-
-            <a href="{{ route('cart') }}" class="header-cart-action">View Cart</a>
-            <a href="{{ route('checkout') }}" class="header-cart-action">Checkout</a>
-        </aside>
 
         <nav id="mobile-menu" class="mobile-nav" :class="{ 'open': open }" aria-label="Mobile">
             <a href="{{ url('/') }}" @click="open = false">Home</a>
