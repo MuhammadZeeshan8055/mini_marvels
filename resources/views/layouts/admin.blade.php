@@ -93,7 +93,15 @@
                 <a href="{{ route('admin.orders') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.orders') ? 'bg-white/20' : '' }}">Orders</a>
                 <a href="{{ route('admin.categories') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.categories') ? 'bg-white/20' : '' }}">Categories</a>
                 <a href="{{ route('admin.products') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.products') ? 'bg-white/20' : '' }}">Products</a>
-                <a href="{{ route('home') }}" class="rounded-lg px-3 py-2 hover:bg-white/10" target="_blank">View Store</a>
+
+                <p class="mt-3 mb-1 px-3 text-[11px] uppercase tracking-wider text-white/50">Content</p>
+                <a href="{{ route('admin.homepage') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.homepage') ? 'bg-white/20' : '' }}">Homepage</a>
+                <a href="{{ route('admin.footer') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.footer') ? 'bg-white/20' : '' }}">Footer</a>
+                <a href="{{ route('admin.testimonials') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.testimonials') ? 'bg-white/20' : '' }}">Testimonials</a>
+                <a href="{{ route('admin.about') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.about') ? 'bg-white/20' : '' }}">About Us</a>
+                <a href="{{ route('admin.contact') }}" class="rounded-lg px-3 py-2 hover:bg-white/10 {{ request()->routeIs('admin.contact') ? 'bg-white/20' : '' }}">Contact Us</a>
+
+                <a href="{{ route('home') }}" class="mt-2 rounded-lg px-3 py-2 hover:bg-white/10" target="_blank">View Store</a>
             </nav>
         </aside>
 

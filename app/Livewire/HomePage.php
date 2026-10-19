@@ -3,7 +3,10 @@
 namespace App\Livewire;
 
 use App\Models\Category;
+use App\Models\HeroSlide;
 use App\Models\Product;
+use App\Models\SiteSetting;
+use App\Models\Testimonial;
 use Livewire\Component;
 
 class HomePage extends Component
@@ -20,6 +23,7 @@ class HomePage extends Component
             'promos' => $this->promos(),
             'trust' => $this->trust(),
             'testimonials' => $this->testimonials(),
+            'testimonialIntro' => $this->testimonialIntro(),
         ])->layout('layouts.app', [
             'title' => 'Mini Marvels — Kids Toys & Deals',
             'metaDescription' => 'Shop eco-friendly games and toys that foster creativity. Deals on toddler toys, puzzles, learning toys and more at Mini Marvels.',
@@ -44,28 +48,26 @@ class HomePage extends Component
 
     private function slides(): array
     {
+        $fromDb = HeroSlide::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (HeroSlide $slide) => $slide->toFrontend())
+            ->all();
+
+        if ($fromDb !== []) {
+            return $fromDb;
+        }
+
         return [
             [
                 'eyebrow' => 'Educational Programs',
                 'title' => 'Eco-friendly Games & Toys That Foster Creativity',
                 'text' => 'Orci ac auctor augue mauris augue neque. Vestibulum ut sodales quam. Ut in vestibulum augue.',
+                'button_label' => 'Shop Now',
+                'button_url' => '#products',
                 'image' => 'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=900&h=900&fit=crop',
-                'title_dark' => false,
-                'eyebrow_box' => false,
-            ],
-            [
-                'eyebrow' => 'Educational Programs',
-                'title' => "A Perfect Place To Explore Your Kid's Talent",
-                'text' => 'Mauris augue neque. Vestibulum ut sodales quam. Ut in vestibulum augue Orci ac auctor augue.',
-                'image' => 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=900&h=900&fit=crop',
-                'title_dark' => false,
-                'eyebrow_box' => true,
-            ],
-            [
-                'eyebrow' => 'Educational Programs',
-                'title' => 'Our Best Features and Learn From Anywhere',
-                'text' => 'Vestibulum ut sodales quam. Ut in vestibulum augue. Orci ac auctor augue mauris augue neque.',
-                'image' => 'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=900&h=900&fit=crop',
                 'title_dark' => false,
                 'eyebrow_box' => false,
             ],
@@ -162,10 +164,34 @@ class HomePage extends Component
 
     private function testimonials(): array
     {
+        $fromDb = Testimonial::query()
+            ->active()
+            ->orderBy('sort_order')
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Testimonial $item) => $item->toFrontend())
+            ->all();
+
+        if ($fromDb !== []) {
+            return $fromDb;
+        }
+
         return [
-            ['name' => 'Jessica Lisa', 'role' => 'Parent', 'text' => 'My kids love every toy we ordered. The quality is wonderful, delivery was fast, and the packaging made everything feel extra special.', 'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop'],
-            ['name' => 'Yoshna', 'role' => 'Teacher', 'text' => 'These learning toys are perfect for our classroom. They feel safe, sturdy, and keep the children happily engaged throughout playtime.', 'image' => 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=300&h=300&fit=crop'],
-            ['name' => 'Zira Decan', 'role' => 'Parent', 'text' => 'Mini Marvels has become our favorite place for birthday gifts and rainy-day activities. Every order has been a lovely experience.', 'image' => 'https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=300&h=300&fit=crop'],
+            [
+                'name' => 'Jessica Lisa',
+                'role' => 'Parent',
+                'text' => 'My kids love every toy we ordered. The quality is wonderful, delivery was fast, and the packaging made everything feel extra special.',
+                'image' => 'https://images.unsplash.com/photo-1544005313-94ddf0286df2?w=300&h=300&fit=crop',
+                'rating' => 5,
+            ],
         ];
+    }
+
+    private function testimonialIntro(): array
+    {
+        return array_merge(
+            SiteSetting::testimonialIntroDefaults(),
+            SiteSetting::getValue('testimonials_intro', [])
+        );
     }
 }

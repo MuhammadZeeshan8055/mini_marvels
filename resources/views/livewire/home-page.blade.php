@@ -88,7 +88,7 @@
                             @endif
 
                             <p class="hero-text">{{ $slide['text'] }}</p>
-                            <a href="#products" class="btn-shop">Shop Now</a>
+                            <a href="{{ $slide['button_url'] ?? '#products' }}" class="btn-shop">{{ $slide['button_label'] ?? 'Shop Now' }}</a>
                         </div>
 
                         <div class="hero-media">
@@ -302,9 +302,9 @@
 <section id="testimonials" class="section testimonial-section" aria-labelledby="testimonial-title">
     <div class="container testimonial-layout">
         <div class="testimonial-intro">
-            <span class="testimonial-kicker">Top Reviews</span>
-            <h2 id="testimonial-title">Client Testimonials</h2>
-            <p>Hear from families and teachers who make Mini Marvels part of every playful day.</p>
+            <span class="testimonial-kicker">{{ $testimonialIntro['kicker'] ?? 'Top Reviews' }}</span>
+            <h2 id="testimonial-title">{{ $testimonialIntro['title'] ?? 'Client Testimonials' }}</h2>
+            <p>{{ $testimonialIntro['description'] ?? 'Hear from families and teachers who make Mini Marvels part of every playful day.' }}</p>
             <div class="testimonial-pagination" aria-label="Choose testimonial"></div>
         </div>
 
@@ -322,7 +322,12 @@
                                 </div>
                                 <div class="testimonial-divider" aria-hidden="true"></div>
                                 <div class="testimonial-review">
-                                    <div class="testimonial-stars" aria-label="5 out of 5 stars">&#9733; &#9733; &#9733; &#9733; &#9733;</div>
+                                    @php $rating = (int) ($item['rating'] ?? 5); @endphp
+                                    <div class="testimonial-stars" aria-label="{{ $rating }} out of 5 stars">
+                                        @for ($s = 1; $s <= 5; $s++)
+                                            <span class="{{ $s <= $rating ? '' : 'is-empty' }}">&#9733;</span>
+                                        @endfor
+                                    </div>
                                     <p>{{ $item['text'] }}</p>
                                 </div>
                                 <span class="review-doodle review-car" aria-hidden="true">&#128663;</span>

@@ -73,10 +73,9 @@
 
                 <nav class="nav-left" aria-label="Main">
                     <a href="{{ url('/') }}">Home</a>
-                    <!-- <a href="#categories">Pages</a> -->
                     <a href="{{ route('shop') }}">Shop</a>
-                    <a href="#testimonials">Blog</a>
-                    <a href="#newsletter">Contact Us</a>
+                    <a href="{{ route('about') }}">About Us</a>
+                    <a href="{{ route('contact') }}">Contact Us</a>
                 </nav>
             </div>
 
@@ -104,10 +103,9 @@
 
         <nav id="mobile-menu" class="mobile-nav" :class="{ 'open': open }" aria-label="Mobile">
             <a href="{{ url('/') }}" @click="open = false">Home</a>
-            <!-- <a href="#categories" @click="open = false">Pages</a> -->
             <a href="{{ route('shop') }}" @click="open = false">Shop</a>
-            <a href="#testimonials" @click="open = false">Blog</a>
-            <a href="#newsletter" @click="open = false">Contact Us</a>
+            <a href="{{ route('about') }}" @click="open = false">About Us</a>
+            <a href="{{ route('contact') }}" @click="open = false">Contact Us</a>
         </nav>
     </header>
 
@@ -126,19 +124,16 @@
 
         <div class="footer-main">
             <div class="container">
+                @php
+                    $footer = $footerSettings ?? \App\Models\SiteSetting::footerDefaults();
+                @endphp
+
                 {{-- Instagram-style gallery --}}
                 <div class="footer-gallery">
-                    <h3 class="footer-gallery-title">{{ '@Mini Marvels' }}</h3>
+                    <h3 class="footer-gallery-title">{{ $footer['gallery_title'] ?? '@Mini Marvels' }}</h3>
                     <div class="footer-gallery-row">
-                        @foreach ([
-                            'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=300&h=300&fit=crop',
-                            'https://images.unsplash.com/photo-1566576912321-d58ddd7a6088?w=300&h=300&fit=crop',
-                            'https://images.unsplash.com/photo-1555252333-9f8e92e65df9?w=300&h=300&fit=crop',
-                            'https://images.unsplash.com/photo-1503454537195-1dcabb73ffb9?w=300&h=300&fit=crop',
-                            'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=300&h=300&fit=crop',
-                            'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=300&h=300&fit=crop',
-                        ] as $galleryImage)
-                            <a href="#" class="footer-gallery-item">
+                        @foreach (($footer['gallery_images'] ?? []) as $galleryImage)
+                            <a href="{{ route('about') }}" class="footer-gallery-item">
                                 <img src="{{ $galleryImage }}" alt="Mini Marvels gallery" loading="lazy" width="300" height="300">
                             </a>
                         @endforeach
@@ -154,19 +149,19 @@
                                 <span class="fc-icon" aria-hidden="true">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 10.5L12 3l9 7.5V20a1 1 0 0 1-1 1h-5v-6H9v6H4a1 1 0 0 1-1-1v-9.5z"/></svg>
                                 </span>
-                                No: 58 A, East Madison Street, Baltimore, MD, USA 4508
+                                {{ $footer['address'] ?? '' }}
                             </li>
                             <li>
                                 <span class="fc-icon" aria-hidden="true">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.9v2a2 2 0 0 1-2.2 2 19.8 19.8 0 0 1-8.6-3.1 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.1 4.2 2 2 0 0 1 4.1 2h2a2 2 0 0 1 2 1.7c.1.9.3 1.8.6 2.6a2 2 0 0 1-.5 2.1L7.1 9.5a16 16 0 0 0 6 6l1.1-1.1a2 2 0 0 1 2.1-.5c.8.3 1.7.5 2.6.6A2 2 0 0 1 22 16.9z"/></svg>
                                 </span>
-                                +00 (0) 123 456 789
+                                {{ $footer['phone'] ?? '' }}
                             </li>
                             <li>
                                 <span class="fc-icon" aria-hidden="true">
                                     <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
                                 </span>
-                                contact@example.com
+                                {{ $footer['email'] ?? '' }}
                             </li>
                         </ul>
                         <svg class="footer-rainbow" viewBox="0 0 90 50" aria-hidden="true">
@@ -181,48 +176,50 @@
                     {{-- Useful links + Delivery --}}
                     <div class="footer-col">
                         <h4>Useful Links</h4>
-                        <a href="#newsletter">Contact Us</a>
-                        <a href="#">About Us</a>
-                        <a href="#">Shipping &amp; Returns</a>
-                        <a href="#">Refund Policy</a>
+                        <a href="{{ route('contact') }}">Contact Us</a>
+                        <a href="{{ route('about') }}">About Us</a>
+                        <a href="{{ route('shop') }}">Shop</a>
+                        <a href="{{ route('account') }}">My Account</a>
 
                         <h4 class="footer-col-gap">Delivery</h4>
-                        <a href="#">Free Delivery</a>
-                        <a href="#">FAQ</a>
+                        <a href="{{ route('contact') }}">Free Delivery</a>
+                        <a href="{{ route('contact') }}">FAQ</a>
                     </div>
 
                     {{-- Customer service + social --}}
                     <div class="footer-col">
                         <h4>Customer Service</h4>
-                        <a href="#cart">Orders</a>
-                        <a href="#login">Addresses</a>
-                        <a href="#login">Account Details</a>
-                        <a href="#">24x7 Calls</a>
+                        <a href="{{ route('account') }}">Orders</a>
+                        <a href="{{ route('account') }}">Addresses</a>
+                        <a href="{{ route('account') }}">Account Details</a>
+                        <a href="{{ route('contact') }}">24x7 Calls</a>
 
                         <h4 class="footer-col-gap">Social Media</h4>
                         <div class="footer-social">
-                            <a href="#" aria-label="Facebook">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M13.5 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.6 1.6-1.6h1.8V4.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.4V11H7.1v3H10v8h3.5Z"/>
-                                </svg>
-                            </a>
-                            <a href="#" aria-label="TikTok">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M15.5 3c.3 1.8 1.4 2.9 3.2 3.2v3.1c-1.2 0-2.3-.4-3.2-1v6.1a5.4 5.4 0 1 1-4.7-5.3v3.2a2.3 2.3 0 1 0 1.5 2.1V3h3.2Z"/>
-                                </svg>
-                            </a>
-                            <a href="#" aria-label="Instagram">
-                                <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
-                                    <rect x="3" y="3" width="18" height="18" rx="5"/>
-                                    <circle cx="12" cy="12" r="4"/>
-                                    <circle class="footer-social-dot" cx="17.5" cy="6.5" r="1"/>
-                                </svg>
-                            </a>
-                            <a href="#" aria-label="YouTube">
-                                <svg viewBox="0 0 24 24" aria-hidden="true">
-                                    <path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15.2V8.8l5.5 3.2-5.5 3.2Z"/>
-                                </svg>
-                            </a>
+                            @foreach (($footer['social_links'] ?? []) as $social)
+                                @php
+                                    $platform = strtolower((string) ($social['platform'] ?? ''));
+                                    $url = (string) ($social['url'] ?? '#');
+                                    if ($url === '') {
+                                        $url = '#';
+                                    }
+                                @endphp
+                                <a href="{{ $url }}" aria-label="{{ ucfirst($platform) }}" @if($url !== '#') target="_blank" rel="noopener noreferrer" @endif>
+                                    @if ($platform === 'facebook')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.6 1.6-1.6h1.8V4.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.4V11H7.1v3H10v8h3.5Z"/></svg>
+                                    @elseif ($platform === 'tiktok')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15.5 3c.3 1.8 1.4 2.9 3.2 3.2v3.1c-1.2 0-2.3-.4-3.2-1v6.1a5.4 5.4 0 1 1-4.7-5.3v3.2a2.3 2.3 0 1 0 1.5 2.1V3h3.2Z"/></svg>
+                                    @elseif ($platform === 'instagram')
+                                        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle class="footer-social-dot" cx="17.5" cy="6.5" r="1"/></svg>
+                                    @elseif ($platform === 'youtube')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15.2V8.8l5.5 3.2-5.5 3.2Z"/></svg>
+                                    @elseif ($platform === 'twitter')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.5 7.4L22 21h-6.2l-4.9-6.4L5.5 21H2.7l7-8L2 3h6.3l4.4 5.8L18.2 3Zm-1.1 16.2h1.7L7 4.7H5.2l11.9 14.5Z"/></svg>
+                                    @else
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5a5.5 5.5 0 1 1 7.6 7.6L12 19.2l-2.1-2.1a5.5 5.5 0 0 1 0-7.8 5.4 5.4 0 0 1 7.7 0l1 1-1.4 1.4-1-1a3.4 3.4 0 1 0-4.8 4.8l.1.1L12 16.4l2.5-2.5.1-.1a3.4 3.4 0 0 0 0-4.8"/></svg>
+                                    @endif
+                                </a>
+                            @endforeach
                         </div>
                     </div>
 
@@ -235,10 +232,10 @@
                                 <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M2 21l21-9L2 3v7l15 2-15 2v7z"/></svg>
                             </button>
                         </form>
-                        <p class="footer-news-note">Join our list and get 15% off your first purchase!</p>
+                        <p class="footer-news-note">{{ $footer['newsletter_text'] ?? '' }}</p>
                         <div class="footer-news-art" aria-hidden="true">
                             <img
-                                src="https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=240&h=240&fit=crop"
+                                src="{{ $footer['newsletter_image'] ?? '' }}"
                                 alt=""
                                 width="120"
                                 height="120"
@@ -252,7 +249,7 @@
 
         <div class="footer-bar">
             <div class="container footer-bar-inner">
-                <p>&copy; {{ date('Y') }} Mini Marvels. All Rights Reserved.</p>
+                <p>&copy; {{ date('Y') }} {{ $footer['copyright'] ?? 'Mini Marvels. All Rights Reserved.' }}</p>
             </div>
         </div>
     </footer>

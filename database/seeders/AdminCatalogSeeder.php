@@ -74,5 +74,7 @@ class AdminCatalogSeeder extends Seeder
                 ]
             );
         }
+
+        $this->call(CmsContentSeeder::class);
     }
 }
