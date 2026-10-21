@@ -11,6 +11,7 @@
     'slug' => null,
     'colors' => [],
     'officialPrice' => null,
+    'id' => null,
 ])
 
 @php
@@ -34,6 +35,10 @@
     x-data="{ activeImage: '{{ $image }}' }"
 >
     <div class="shop-product-media">
+        @if ($id)
+            <livewire:wishlist-button :product-id="(int) $id" wire:key="wish-{{ $id }}" />
+        @endif
+
         {{-- Big image --}}
         <a class="shop-product-image" href="{{ $productUrl }}">
             <img

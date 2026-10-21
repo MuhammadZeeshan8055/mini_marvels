@@ -56,6 +56,7 @@ class ShopPage extends Component
             $colors = $product->colorVariants();
 
             return [
+                'id' => $product->id,
                 'name' => $product->name,
                 'slug' => $product->slug,
                 'category' => $product->category?->name ?? 'Toys',

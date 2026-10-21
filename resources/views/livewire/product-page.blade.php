@@ -115,7 +115,13 @@
                         </span>
                         <span wire:loading wire:target="addToCart">Adding…</span>
                     </button>
-                    <button type="button" class="product-wishlist" aria-label="Add to wishlist">&#9825;</button>
+                    <button
+                        type="button"
+                        class="product-wishlist {{ $this->inWishlist ? 'is-active' : '' }}"
+                        wire:click="toggleWishlist"
+                        aria-label="{{ $this->inWishlist ? 'Remove from wishlist' : 'Add to wishlist' }}"
+                        aria-pressed="{{ $this->inWishlist ? 'true' : 'false' }}"
+                    >{!! $this->inWishlist ? '&#9829;' : '&#9825;' !!}</button>
                 </div>
                 @if ($addedMessage)
                     <p class="product-cart-feedback" role="status" aria-live="polite">{{ $addedMessage }}</p>
@@ -208,6 +214,7 @@
             <div class="product-grid related-product-grid">
                 @foreach ($related as $item)
                     <x-product-card
+                        :id="$item['id'] ?? null"
                         :name="$item['name']"
                         :slug="$item['slug'] ?? null"
                         :category="$item['category']"

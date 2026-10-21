@@ -4,7 +4,9 @@ namespace App\Livewire;
 
 use App\Models\Product;
 use App\Services\Cart;
+use App\Services\Wishlist;
 use Illuminate\Support\Str;
+use Livewire\Attributes\On;
 use Livewire\Component;
 
 class ProductPage extends Component
@@ -77,6 +79,30 @@ class ProductPage extends Component
             : 'Added to cart!';
     }
 
+    public function toggleWishlist(): void
+    {
+        $product = Product::query()->active()->find($this->productId);
+
+        if (! $product) {
+            return;
+        }
+
+        $added = Wishlist::toggle($product);
+        $this->dispatch('wishlist-updated');
+        $this->addedMessage = $added ? 'Added to wishlist!' : 'Removed from wishlist.';
+    }
+
+    public function getInWishlistProperty(): bool
+    {
+        return $this->productId ? Wishlist::has($this->productId) : false;
+    }
+
+    #[On('wishlist-updated')]
+    public function refreshWishlistState(): void
+    {
+        // Sync heart button when wishlist changes elsewhere.
+    }
+
     public function render()
     {
         $productModel = Product::query()
@@ -129,6 +155,7 @@ class ProductPage extends Component
                 $colors = $item->colorVariants();
 
                 return [
+                    'id' => $item->id,
                     'name' => $item->name,
                     'slug' => $item->slug,
                     'category' => $item->category?->name ?? 'Toys',

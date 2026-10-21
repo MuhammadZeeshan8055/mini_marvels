@@ -219,6 +219,7 @@
         <div class="product-grid">
             @foreach ($products as $product)
                 <x-product-card
+                    :id="$product['id'] ?? null"
                     :name="$product['name']"
                     :slug="$product['slug'] ?? null"
                     :category="$product['category']"
@@ -284,6 +285,7 @@
         <div class="product-grid">
             @foreach ($featured as $product)
                 <x-product-card
+                    :id="$product['id'] ?? null"
                     :name="$product['name']"
                     :slug="$product['slug'] ?? null"
                     :category="$product['category']"

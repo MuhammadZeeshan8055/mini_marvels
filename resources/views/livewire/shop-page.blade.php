@@ -94,6 +94,7 @@
                     <div class="shop-product-grid" wire:loading.class="is-loading">
                         @forelse ($this->filteredProducts as $product)
                             <x-product-card
+                                :id="$product['id'] ?? null"
                                 :name="$product['name']"
                                 :slug="$product['slug'] ?? null"
                                 :category="$product['category']"
