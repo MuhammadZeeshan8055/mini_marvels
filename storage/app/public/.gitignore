@@ -1,4 +1,2 @@
-*
-!products/
-!products/**
-!.gitignore
+# Track all public media (products, hero, testimonials, pages, footer, etc.)
+# so clone/pull includes images for demos and client presentations.
