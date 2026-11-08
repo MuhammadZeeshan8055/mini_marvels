@@ -23,6 +23,7 @@ class Product extends Model
         'age',
         'stock',
         'is_featured',
+        'show_on_homepage',
         'is_active',
     ];
 
@@ -33,6 +34,7 @@ class Product extends Model
             'official_price' => 'decimal:2',
             'stock' => 'integer',
             'is_featured' => 'boolean',
+            'show_on_homepage' => 'boolean',
             'is_active' => 'boolean',
         ];
     }
@@ -72,6 +74,11 @@ class Product extends Model
     public function scopeFeatured(Builder $query): Builder
     {
         return $query->where('is_featured', true);
+    }
+
+    public function scopeOnHomepage(Builder $query): Builder
+    {
+        return $query->where('show_on_homepage', true);
     }
 
     public function imageUrl(): string

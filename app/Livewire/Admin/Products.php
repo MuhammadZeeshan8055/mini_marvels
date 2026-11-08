@@ -40,6 +40,8 @@ class Products extends Component
 
     public bool $is_featured = false;
 
+    public bool $show_on_homepage = false;
+
     public bool $is_active = true;
 
     public string $image_url = '';
@@ -88,6 +90,7 @@ class Products extends Component
         $this->stock = (string) $product->stock;
         $this->category_id = $product->category_id;
         $this->is_featured = $product->is_featured;
+        $this->show_on_homepage = $product->show_on_homepage;
         $this->is_active = $product->is_active;
         $this->image_url = (is_string($product->image) && str_starts_with($product->image, 'http'))
             ? $product->image
@@ -177,6 +180,7 @@ class Products extends Component
             'stock',
             'category_id',
             'is_featured',
+            'show_on_homepage',
             'image_url',
             'gallery',
             'colorNames',
@@ -233,6 +237,7 @@ class Products extends Component
             'stock' => ['required', 'integer', 'min:0'],
             'category_id' => ['required', 'exists:categories,id'],
             'is_featured' => ['boolean'],
+            'show_on_homepage' => ['boolean'],
             'is_active' => ['boolean'],
             'image_url' => ['nullable', 'string', 'max:500'],
             'colorNames.*' => ['nullable', 'string', 'max:50'],
@@ -261,6 +266,7 @@ class Products extends Component
             'age' => $this->age !== '' ? $this->age : null,
             'stock' => (int) $this->stock,
             'is_featured' => $this->is_featured,
+            'show_on_homepage' => $this->show_on_homepage,
             'is_active' => $this->is_active,
         ];
 

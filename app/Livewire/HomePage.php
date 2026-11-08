@@ -120,7 +120,7 @@ class HomePage extends Component
         return Product::query()
             ->with(['category', 'images'])
             ->active()
-            ->orderByDesc('is_featured')
+            ->onHomepage()
             ->orderBy('name')
             ->take(8)
             ->get()
