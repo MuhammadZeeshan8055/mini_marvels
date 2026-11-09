@@ -42,6 +42,8 @@ class Products extends Component
 
     public bool $show_on_homepage = false;
 
+    public string $homepage_sort = '0';
+
     public bool $is_active = true;
 
     public string $image_url = '';
@@ -91,6 +93,7 @@ class Products extends Component
         $this->category_id = $product->category_id;
         $this->is_featured = $product->is_featured;
         $this->show_on_homepage = $product->show_on_homepage;
+        $this->homepage_sort = (string) $product->homepage_sort;
         $this->is_active = $product->is_active;
         $this->image_url = (is_string($product->image) && str_starts_with($product->image, 'http'))
             ? $product->image
@@ -181,6 +184,7 @@ class Products extends Component
             'category_id',
             'is_featured',
             'show_on_homepage',
+            'homepage_sort',
             'image_url',
             'gallery',
             'colorNames',
@@ -190,6 +194,7 @@ class Products extends Component
 
         $this->is_active = true;
         $this->stock = '0';
+        $this->homepage_sort = '0';
         $this->showForm = false;
         $this->resetValidation();
     }
@@ -238,6 +243,7 @@ class Products extends Component
             'category_id' => ['required', 'exists:categories,id'],
             'is_featured' => ['boolean'],
             'show_on_homepage' => ['boolean'],
+            'homepage_sort' => ['required', 'integer', 'min:0'],
             'is_active' => ['boolean'],
             'image_url' => ['nullable', 'string', 'max:500'],
             'colorNames.*' => ['nullable', 'string', 'max:50'],
@@ -267,6 +273,7 @@ class Products extends Component
             'stock' => (int) $this->stock,
             'is_featured' => $this->is_featured,
             'show_on_homepage' => $this->show_on_homepage,
+            'homepage_sort' => (int) $this->homepage_sort,
             'is_active' => $this->is_active,
         ];
 

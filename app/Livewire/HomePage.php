@@ -121,6 +121,7 @@ class HomePage extends Component
             ->with(['category', 'images'])
             ->active()
             ->onHomepage()
+            ->orderBy('homepage_sort')
             ->orderBy('name')
             ->take(8)
             ->get()

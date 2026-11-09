@@ -288,16 +288,29 @@
                 </div>
             </div>
 
-            <div class="flex items-center gap-6 md:col-span-2">
+            <div class="flex flex-wrap items-center gap-6 md:col-span-2">
                 <label class="inline-flex items-center gap-2 text-sm">
                     <input type="checkbox" wire:model="is_featured" class="rounded">
                     Featured
+                </label>
+                <label class="inline-flex items-center gap-2 text-sm">
+                    <input type="checkbox" wire:model.live="show_on_homepage" class="rounded">
+                    Show on Homepage
                 </label>
                 <label class="inline-flex items-center gap-2 text-sm">
                     <input type="checkbox" wire:model="is_active" class="rounded">
                     Active
                 </label>
             </div>
+
+            @if ($show_on_homepage)
+                <div>
+                    <label class="block text-sm font-medium text-slate-700 mb-1">Homepage Sort Order</label>
+                    <input type="number" min="0" wire:model="homepage_sort" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30">
+                    <p class="text-xs text-slate-500 mt-1">Smaller number shows first. Example: 1, then 2, then 3.</p>
+                    @error('homepage_sort') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
+                </div>
+            @endif
 
             <div class="md:col-span-2">
                 <button type="submit" class="rounded-full bg-plum text-white px-5 py-2.5 text-sm">
@@ -343,6 +356,9 @@
                                         <p class="text-xs text-slate-500">{{ $product->age }}</p>
                                         @if ($product->is_featured)
                                             <span class="text-[10px] uppercase tracking-wide text-amber-600">Featured</span>
+                                        @endif
+                                        @if ($product->show_on_homepage)
+                                            <span class="text-[10px] uppercase tracking-wide text-plum">Homepage #{{ $product->homepage_sort }}</span>
                                         @endif
                                     </div>
                                 </div>

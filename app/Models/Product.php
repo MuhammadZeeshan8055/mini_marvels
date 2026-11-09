@@ -24,6 +24,7 @@ class Product extends Model
         'stock',
         'is_featured',
         'show_on_homepage',
+        'homepage_sort',
         'is_active',
     ];
 
@@ -35,6 +36,7 @@ class Product extends Model
             'stock' => 'integer',
             'is_featured' => 'boolean',
             'show_on_homepage' => 'boolean',
+            'homepage_sort' => 'integer',
             'is_active' => 'boolean',
         ];
     }
