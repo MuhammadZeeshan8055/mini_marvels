@@ -143,21 +143,23 @@
 {{-- Categories --}}
 <section id="categories" class="category-showcase" aria-label="Shop by category">
     <nav class="category-menu" aria-label="Toy categories">
-        <div class="category-menu-track">
-            @foreach ($categories as $category)
-                <a href="#products" class="category-menu-item">
-                    <span class="category-menu-mark" aria-hidden="true">&#10022;</span>
-                    <span>{{ $category['name'] }}</span>
-                </a>
-            @endforeach
-        </div>
-        <div class="category-menu-track" aria-hidden="true">
-            @foreach ($categories as $category)
-                <a href="#products" class="category-menu-item" tabindex="-1">
-                    <span class="category-menu-mark" aria-hidden="true">&#10022;</span>
-                    <span>{{ $category['name'] }}</span>
-                </a>
-            @endforeach
+        <div class="category-menu-strip">
+            <div class="category-menu-track">
+                @foreach ($categories as $category)
+                    <a href="#products" class="category-menu-item">
+                        <span class="category-menu-mark" aria-hidden="true">&#10022;</span>
+                        <span>{{ $category['name'] }}</span>
+                    </a>
+                @endforeach
+            </div>
+            <div class="category-menu-track" aria-hidden="true">
+                @foreach ($categories as $category)
+                    <a href="#products" class="category-menu-item" tabindex="-1">
+                        <span class="category-menu-mark" aria-hidden="true">&#10022;</span>
+                        <span>{{ $category['name'] }}</span>
+                    </a>
+                @endforeach
+            </div>
         </div>
     </nav>
 

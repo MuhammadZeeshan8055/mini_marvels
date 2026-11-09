@@ -42,9 +42,9 @@ class SiteSetting extends Model
     {
         return [
             'gallery_title' => '@Mini Marvels',
-            'address' => 'No: 58 A, East Madison Street, Baltimore, MD, USA 4508',
-            'phone' => '+00 (0) 123 456 789',
-            'email' => 'contact@example.com',
+            'address' => 'Murree Road, Rawalpindi',
+            'phone' => '03325777194',
+            'email' => 'minimarvels804@gmail.com',
             'newsletter_text' => 'Join our list and get 15% off your first purchase!',
             'newsletter_image' => 'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=240&h=240&fit=crop',
             'copyright' => 'Mini Marvels. All Rights Reserved.',

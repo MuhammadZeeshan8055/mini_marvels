@@ -113,9 +113,9 @@ class CmsContentSeeder extends Seeder
                 'meta_title' => 'Contact Us — Mini Marvels',
                 'meta_description' => 'Get in touch with Mini Marvels for order help, product questions, and support.',
                 'extras' => [
-                    'address' => 'No: 58 A, East Madison Street, Baltimore, MD, USA 4508',
-                    'phone' => '+00 (0) 123 456 789',
-                    'email' => 'contact@example.com',
+                    'address' => 'Murree Road, Rawalpindi',
+                    'phone' => '03325777194',
+                    'email' => 'minimarvels804@gmail.com',
                     'show_form' => true,
                     'form_note' => 'This form is a preview for now — messages are not sent yet.',
                 ],

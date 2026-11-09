@@ -741,22 +741,32 @@ a {
     border-bottom: 1px solid rgba(45, 42, 50, 0.65);
 }
 
+.category-menu-strip {
+    display: flex;
+    width: max-content;
+    align-items: center;
+    animation: category-marquee 34s linear infinite;
+    will-change: transform;
+}
+
+.category-menu:hover .category-menu-strip {
+    animation-play-state: paused;
+}
+
 .category-menu-track {
     display: flex;
     align-items: center;
     gap: 4.5rem;
     flex: 0 0 auto;
     padding: 0 2.25rem;
-    animation: category-marquee 34s linear infinite;
-}
-
-.category-menu:hover .category-menu-track {
-    animation-play-state: paused;
 }
 
 @keyframes category-marquee {
+    from {
+        transform: translateX(0);
+    }
     to {
-        transform: translateX(-100%);
+        transform: translateX(-50%);
     }
 }
 
@@ -894,10 +904,13 @@ a {
         min-height: 66px;
     }
 
+    .category-menu-strip {
+        animation-duration: 26s;
+    }
+
     .category-menu-track {
         gap: 3rem;
         padding-inline: 1.5rem;
-        animation-duration: 26s;
     }
 
     .category-carousel-row {
@@ -925,18 +938,6 @@ a {
         animation: none;
     }
 
-    .category-menu {
-        width: 100%;
-        overflow-x: auto;
-    }
-
-    .category-menu-track {
-        animation: none;
-    }
-
-    .category-menu-track[aria-hidden="true"] {
-        display: none;
-    }
 }
 
 .age-grid {

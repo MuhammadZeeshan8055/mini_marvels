@@ -79,7 +79,7 @@
             <h3 class="text-sm font-semibold text-plum">SEO</h3>
             <div>
                 <label class="block text-sm mb-1">Meta title</label>
-                <input type="text" wire:model="meta_title" maxlength="70" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30">
+                <input type="text" wire:model="meta_title" maxlength="255" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30">
             </div>
             <div>
                 <label class="block text-sm mb-1">Meta description</label>

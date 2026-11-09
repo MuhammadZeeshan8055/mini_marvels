@@ -268,7 +268,7 @@
 
                 <div>
                     <label class="block text-sm mb-1">Meta title</label>
-                    <input type="text" wire:model="meta_title" maxlength="70" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30" placeholder="Custom page title">
+                    <input type="text" wire:model="meta_title" maxlength="255" class="w-full rounded-xl border border-slate-200 px-3 py-2 focus:outline-none focus:ring-2 focus:ring-plum/30" placeholder="Custom page title">
                     <p class="text-xs text-slate-500 mt-1">Recommended up to 60–70 characters.</p>
                     @error('meta_title') <p class="text-red-500 text-xs mt-1">{{ $message }}</p> @enderror
                 </div>

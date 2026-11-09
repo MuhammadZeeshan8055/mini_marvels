@@ -49,7 +49,7 @@ class AboutPage extends Component
             'content' => ['nullable', 'string', 'max:50000'],
             'image_url' => ['nullable', 'string', 'max:500'],
             'image_upload' => ['nullable', 'image', 'max:4096'],
-            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:160'],
         ]);
 

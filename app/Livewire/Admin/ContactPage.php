@@ -33,9 +33,9 @@ class ContactPage extends Component
             'title' => 'Contact Us',
             'content' => '<p>Dummy contact content. Edit this from admin.</p>',
             'extras' => [
-                'address' => 'No: 58 A, East Madison Street, Baltimore, MD, USA 4508',
-                'phone' => '+00 (0) 123 456 789',
-                'email' => 'contact@example.com',
+                'address' => 'Murree Road, Rawalpindi',
+                'phone' => '03325777194',
+                'email' => 'minimarvels804@gmail.com',
                 'show_form' => true,
                 'form_note' => 'This form is a preview for now — messages are not sent yet.',
             ],
@@ -62,7 +62,7 @@ class ContactPage extends Component
             'email' => ['required', 'email', 'max:150'],
             'show_form' => ['boolean'],
             'form_note' => ['nullable', 'string', 'max:255'],
-            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:160'],
         ]);
 

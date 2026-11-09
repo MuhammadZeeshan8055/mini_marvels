@@ -233,7 +233,7 @@ class Products extends Component
         $this->validate([
             'name' => ['required', 'string', 'min:2', 'max:150'],
             'description' => ['nullable', 'string', 'max:50000'],
-            'meta_title' => ['nullable', 'string', 'max:70'],
+            'meta_title' => ['nullable', 'string', 'max:255'],
             'meta_description' => ['nullable', 'string', 'max:160'],
             'meta_keywords' => ['nullable', 'string', 'max:255'],
             'price' => ['required', 'numeric', 'min:0'],
