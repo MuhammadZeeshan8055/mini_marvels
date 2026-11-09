@@ -10,6 +10,10 @@
 
     <title>{{ $title ?? 'Mini Marvels' }}</title>
 
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
+
     <meta property="og:title" content="{{ $title ?? 'Mini Marvels' }}">
     <meta property="og:description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
