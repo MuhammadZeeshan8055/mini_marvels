@@ -10,6 +10,7 @@ use Livewire\Component;
 
 class ShopPage extends Component
 {
+    #[Url]
     public string $search = '';
 
     public string $category = 'All';

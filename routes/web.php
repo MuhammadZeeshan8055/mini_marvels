@@ -19,8 +19,30 @@ use App\Livewire\MyAccountPage;
 use App\Livewire\ProductPage;
 use App\Livewire\ShopPage;
 use App\Livewire\WishlistPage;
+use App\Http\Controllers\SitemapController;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
+
+Route::get('/sitemap.xml', [SitemapController::class, 'index'])->name('sitemap');
+Route::get('/robots.txt', function () {
+    $lines = [
+        'User-agent: *',
+        'Allow: /',
+        'Disallow: /admin',
+        'Disallow: /cart',
+        'Disallow: /checkout',
+        'Disallow: /my-account',
+        'Disallow: /wishlist',
+        'Disallow: /login',
+        'Disallow: /register',
+        '',
+        'Sitemap: '.url('/sitemap.xml'),
+        '',
+    ];
+
+    return response(implode("\n", $lines), 200)
+        ->header('Content-Type', 'text/plain; charset=UTF-8');
+})->name('robots');
 
 Route::get('/', HomePage::class)->name('home');
 Route::get('/product/{slug?}', ProductPage::class)->name('product.show');

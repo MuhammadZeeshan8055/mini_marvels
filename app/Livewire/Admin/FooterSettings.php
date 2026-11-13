@@ -75,10 +75,23 @@ class FooterSettings extends Component
         }
 
         if ($this->social_links === []) {
-            $this->social_links = [
-                ['platform' => 'facebook', 'url' => ''],
-                ['platform' => 'instagram', 'url' => ''],
-            ];
+            $this->social_links = collect(SiteSetting::defaultSocialLinks())
+                ->map(fn ($link) => [
+                    'platform' => $link['platform'],
+                    'url' => $link['url'],
+                ])
+                ->values()
+                ->all();
+
+            if ($this->social_links === []) {
+                $this->social_links = [
+                    ['platform' => 'facebook', 'url' => (string) config('seo.social.facebook', '')],
+                    ['platform' => 'instagram', 'url' => (string) config('seo.social.instagram', '')],
+                    ['platform' => 'youtube', 'url' => (string) config('seo.social.youtube', '')],
+                    ['platform' => 'twitter', 'url' => (string) config('seo.social.twitter', '')],
+                    ['platform' => 'linkedin', 'url' => (string) config('seo.social.linkedin', '')],
+                ];
+            }
         }
     }
 

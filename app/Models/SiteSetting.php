@@ -56,13 +56,78 @@ class SiteSetting extends Model
                 'https://images.unsplash.com/photo-1587654780291-39c9404d746b?w=300&h=300&fit=crop',
                 'https://images.unsplash.com/photo-1596461404969-9ae70f2830c1?w=300&h=300&fit=crop',
             ],
-            'social_links' => [
-                ['platform' => 'facebook', 'url' => '#'],
-                ['platform' => 'tiktok', 'url' => '#'],
-                ['platform' => 'instagram', 'url' => '#'],
-                ['platform' => 'youtube', 'url' => '#'],
-            ],
+            'social_links' => static::defaultSocialLinks(),
         ];
+    }
+
+    /**
+     * @return array<int, array{platform: string, url: string}>
+     */
+    public static function defaultSocialLinks(): array
+    {
+        $configured = config('seo.social', []);
+
+        $platforms = ['facebook', 'instagram', 'youtube', 'twitter', 'linkedin', 'tiktok'];
+        $links = [];
+
+        foreach ($platforms as $platform) {
+            $url = trim((string) ($configured[$platform] ?? ''));
+
+            if ($url === '' || $url === '#') {
+                continue;
+            }
+
+            $links[] = [
+                'platform' => $platform,
+                'url' => $url,
+            ];
+        }
+
+        return $links;
+    }
+
+    /**
+     * Absolute http(s) social links for the storefront / schema sameAs.
+     *
+     * @return array<int, array{platform: string, url: string, label: string}>
+     */
+    public static function resolvedSocialLinks(?array $footer = null): array
+    {
+        $footer ??= array_merge(static::footerDefaults(), static::getValue('footer', []));
+        $links = $footer['social_links'] ?? [];
+
+        if (! is_array($links) || $links === []) {
+            $links = static::defaultSocialLinks();
+        }
+
+        $resolved = [];
+
+        foreach ($links as $link) {
+            $platform = strtolower(trim((string) ($link['platform'] ?? '')));
+            $url = trim((string) ($link['url'] ?? ''));
+
+            if ($url === '' || $url === '#') {
+                $url = trim((string) config("seo.social.{$platform}", ''));
+            }
+
+            if ($platform === '' || (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://'))) {
+                continue;
+            }
+
+            $resolved[] = [
+                'platform' => $platform,
+                'url' => $url,
+                'label' => match ($platform) {
+                    'twitter' => 'X',
+                    'youtube' => 'YouTube',
+                    'linkedin' => 'LinkedIn',
+                    'tiktok' => 'TikTok',
+                    default => ucfirst($platform),
+                },
+            ];
+        }
+
+        return array_values($resolved);
     }
 
     public static function testimonialIntroDefaults(): array

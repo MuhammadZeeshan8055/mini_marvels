@@ -40,6 +40,8 @@ class AppServiceProvider extends ServiceProvider
                 $footer['gallery_images'] ?? []
             ));
 
+            $footer['social_links'] = SiteSetting::resolvedSocialLinks($footer);
+
             $view->with('footerSettings', $footer);
         });
     }

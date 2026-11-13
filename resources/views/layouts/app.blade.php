@@ -2,18 +2,23 @@
 <html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <meta name="description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
+    <meta name="theme-color" content="#5D3E9F">
     @if (! empty($metaKeywords))
         <meta name="keywords" content="{{ $metaKeywords }}">
     @endif
 
     <title>{{ $title ?? 'Mini Marvels' }}</title>
+    <link rel="canonical" href="{{ $canonicalUrl ?? url()->current() }}">
 
     <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
     <link rel="icon" type="image/png" sizes="32x32" href="{{ asset('favicon-32x32.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}">
 
+    <meta property="og:site_name" content="Mini Marvels">
+    <meta property="og:locale" content="{{ str_replace('_', '-', app()->getLocale()) }}">
+    <meta property="og:url" content="{{ $canonicalUrl ?? url()->current() }}">
     <meta property="og:title" content="{{ $title ?? 'Mini Marvels' }}">
     <meta property="og:description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
     <meta property="og:type" content="{{ $ogType ?? 'website' }}">
@@ -23,14 +28,20 @@
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:title" content="{{ $title ?? 'Mini Marvels' }}">
     <meta name="twitter:description" content="{{ $metaDescription ?? 'Mini Marvels — kids toys, deals, and playful learning.' }}">
+    @if (! empty($ogImage))
+        <meta name="twitter:image" content="{{ $ogImage }}">
+    @endif
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+    <noscript>
+        <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@400;500;600;700&display=swap" rel="stylesheet">
+    </noscript>
 
-    <script src="https://cdn.tailwindcss.com"></script>
     <script>
-        tailwind.config = {
+        window.tailwind = window.tailwind || {};
+        window.tailwind.config = {
             theme: {
                 extend: {
                     colors: {
@@ -44,11 +55,14 @@
                     },
                 },
             },
-        }
+        };
     </script>
+    <script src="https://cdn.tailwindcss.com"></script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
+
+    @include('partials.json-ld')
 
     @livewireStyles
 </head>
@@ -198,12 +212,10 @@
                             @foreach (($footer['social_links'] ?? []) as $social)
                                 @php
                                     $platform = strtolower((string) ($social['platform'] ?? ''));
-                                    $url = (string) ($social['url'] ?? '#');
-                                    if ($url === '') {
-                                        $url = '#';
-                                    }
+                                    $url = (string) ($social['url'] ?? '');
+                                    $label = $social['label'] ?? ucfirst($platform);
                                 @endphp
-                                <a href="{{ $url }}" aria-label="{{ ucfirst($platform) }}" @if($url !== '#') target="_blank" rel="noopener noreferrer" @endif>
+                                <a href="{{ $url }}" aria-label="{{ $label }}" target="_blank" rel="noopener noreferrer me">
                                     @if ($platform === 'facebook')
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M13.5 22v-8h2.8l.4-3h-3.2V9.1c0-.9.3-1.6 1.6-1.6h1.8V4.8c-.3 0-1.4-.1-2.6-.1-2.6 0-4.3 1.6-4.3 4.4V11H7.1v3H10v8h3.5Z"/></svg>
                                     @elseif ($platform === 'tiktok')
@@ -214,6 +226,8 @@
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21.6 7.2a2.8 2.8 0 0 0-2-2C17.8 4.7 12 4.7 12 4.7s-5.8 0-7.6.5a2.8 2.8 0 0 0-2 2A29 29 0 0 0 2 12a29 29 0 0 0 .4 4.8 2.8 2.8 0 0 0 2 2c1.8.5 7.6.5 7.6.5s5.8 0 7.6-.5a2.8 2.8 0 0 0 2-2A29 29 0 0 0 22 12a29 29 0 0 0-.4-4.8ZM10 15.2V8.8l5.5 3.2-5.5 3.2Z"/></svg>
                                     @elseif ($platform === 'twitter')
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18.2 3H21l-6.5 7.4L22 21h-6.2l-4.9-6.4L5.5 21H2.7l7-8L2 3h6.3l4.4 5.8L18.2 3Zm-1.1 16.2h1.7L7 4.7H5.2l11.9 14.5Z"/></svg>
+                                    @elseif ($platform === 'linkedin')
+                                        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9H3.7v11.2h2.8V9ZM5.1 3.6A1.7 1.7 0 1 0 5.1 7a1.7 1.7 0 0 0 0-3.4ZM20.3 20.2h-2.8v-5.5c0-1.5-.6-2.5-1.9-2.5-1 0-1.5.7-1.8 1.3-.1.2-.1.6-.1.9v5.8H11V9h2.7v1.5c.4-.7 1.3-1.8 3.2-1.8 2.3 0 4 1.5 4 4.8v6.7Z"/></svg>
                                     @else
                                         <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 9.5a5.5 5.5 0 1 1 7.6 7.6L12 19.2l-2.1-2.1a5.5 5.5 0 0 1 0-7.8 5.4 5.4 0 0 1 7.7 0l1 1-1.4 1.4-1-1a3.4 3.4 0 1 0-4.8 4.8l.1.1L12 16.4l2.5-2.5.1-.1a3.4 3.4 0 0 0 0-4.8"/></svg>
                                     @endif
@@ -253,70 +267,86 @@
         </div>
     </footer>
 
-    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js"></script>
-    <script>
+    <script src="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.js" defer></script>
+    <script defer>
         document.addEventListener('DOMContentLoaded', function () {
-            if (document.querySelector('.hero-swiper')) {
-                new Swiper('.hero-swiper', {
-                    loop: true,
-                    speed: 700,
-                    autoplay: { delay: 5000, disableOnInteraction: false },
-                    navigation: {
-                        nextEl: '.hero-next',
-                        prevEl: '.hero-prev',
-                    },
-                });
-            }
+            const needsSwiper = document.querySelector('.hero-swiper, .category-swiper, .testimonial-swiper, .product-main-swiper');
 
-            if (document.querySelector('.category-swiper')) {
-                new Swiper('.category-swiper', {
-                    slidesPerView: 2,
-                    navigation: {
-                        nextEl: '.category-next',
-                        prevEl: '.category-prev',
-                    },
-                    breakpoints: {
-                        640: { slidesPerView: 3 },
-                        900: { slidesPerView: 4 },
-                        1200: { slidesPerView: 6 },
-                    },
-                });
-            }
+            const initSwipers = () => {
+                if (! needsSwiper || typeof Swiper === 'undefined') return;
 
-            if (document.querySelector('.testimonial-swiper')) {
-                new Swiper('.testimonial-swiper', {
-                    loop: true,
-                    speed: 550,
-                    autoplay: { delay: 5500, disableOnInteraction: false },
-                    pagination: {
-                        el: '.testimonial-pagination',
-                        clickable: true,
-                    },
-                });
-            }
-
-            if (document.querySelector('.product-main-swiper')) {
-                const productThumbs = new Swiper('.product-thumb-swiper', {
-                    slidesPerView: 4,
-                    spaceBetween: 10,
-                    freeMode: true,
-                    watchSlidesProgress: true,
-                    slideToClickedSlide: true,
-                    breakpoints: {
-                        768: {
-                            direction: 'vertical',
-                            slidesPerView: 4,
+                if (document.querySelector('.hero-swiper')) {
+                    new Swiper('.hero-swiper', {
+                        loop: true,
+                        speed: 700,
+                        autoplay: { delay: 5000, disableOnInteraction: false },
+                        navigation: {
+                            nextEl: '.hero-next',
+                            prevEl: '.hero-prev',
                         },
-                    },
-                });
+                    });
+                }
 
-                new Swiper('.product-main-swiper', {
-                    spaceBetween: 10,
-                    grabCursor: true,
-                    keyboard: { enabled: true },
-                    thumbs: { swiper: productThumbs },
-                });
-            }
+                if (document.querySelector('.category-swiper')) {
+                    new Swiper('.category-swiper', {
+                        slidesPerView: 2,
+                        navigation: {
+                            nextEl: '.category-next',
+                            prevEl: '.category-prev',
+                        },
+                        breakpoints: {
+                            640: { slidesPerView: 3 },
+                            900: { slidesPerView: 4 },
+                            1200: { slidesPerView: 6 },
+                        },
+                    });
+                }
+
+                if (document.querySelector('.testimonial-swiper')) {
+                    new Swiper('.testimonial-swiper', {
+                        loop: true,
+                        speed: 550,
+                        autoplay: { delay: 5500, disableOnInteraction: false },
+                        pagination: {
+                            el: '.testimonial-pagination',
+                            clickable: true,
+                        },
+                    });
+                }
+
+                if (document.querySelector('.product-main-swiper')) {
+                    const productThumbs = new Swiper('.product-thumb-swiper', {
+                        slidesPerView: 4,
+                        spaceBetween: 10,
+                        freeMode: true,
+                        watchSlidesProgress: true,
+                        slideToClickedSlide: true,
+                        breakpoints: {
+                            768: {
+                                direction: 'vertical',
+                                slidesPerView: 4,
+                            },
+                        },
+                    });
+
+                    new Swiper('.product-main-swiper', {
+                        spaceBetween: 10,
+                        grabCursor: true,
+                        keyboard: { enabled: true },
+                        thumbs: { swiper: productThumbs },
+                    });
+                }
+            };
+
+            const schedule = (fn) => {
+                if ('requestIdleCallback' in window) {
+                    requestIdleCallback(fn, { timeout: 1200 });
+                } else {
+                    setTimeout(fn, 1);
+                }
+            };
+
+            schedule(initSwipers);
 
             const revealCardSelector = [
                 '.shop-product-card',
@@ -331,6 +361,7 @@
                 '.account-stat',
             ].join(',');
 
+            let revealTimer = null;
             const revealCards = () => {
                 const cards = [...document.querySelectorAll(revealCardSelector)]
                     .filter((card) => !card.classList.contains('scroll-reveal-card'));
@@ -362,12 +393,17 @@
                 });
             };
 
-            revealCards();
-            document.addEventListener('livewire:navigated', revealCards);
+            const queueRevealCards = () => {
+                clearTimeout(revealTimer);
+                revealTimer = setTimeout(() => schedule(revealCards), 80);
+            };
+
+            queueRevealCards();
+            document.addEventListener('livewire:navigated', queueRevealCards);
 
             const pageContent = document.querySelector('main');
             if (pageContent) {
-                new MutationObserver(revealCards).observe(pageContent, {
+                new MutationObserver(queueRevealCards).observe(pageContent, {
                     childList: true,
                     subtree: true,
                 });

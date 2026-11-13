@@ -181,13 +181,84 @@ class ProductPage extends Component
             $ogImage = url($ogImage);
         }
 
+        $productUrl = route('product.show', $productModel->slug);
+        $availability = $productModel->stock > 0
+            ? 'https://schema.org/InStock'
+            : 'https://schema.org/OutOfStock';
+
+        $productSchema = [
+            '@type' => 'Product',
+            '@id' => $productUrl.'#product',
+            'name' => $product['name'],
+            'description' => $pageDescription,
+            'sku' => (string) $productModel->id,
+            'url' => $productUrl,
+            'image' => array_values(array_filter([
+                $ogImage,
+                ...collect($colors)->pluck('image')->map(function ($image) {
+                    if (! $image) {
+                        return null;
+                    }
+
+                    if (! str_starts_with($image, 'http://') && ! str_starts_with($image, 'https://')) {
+                        return url($image);
+                    }
+
+                    return $image;
+                })->all(),
+            ])),
+            'brand' => [
+                '@type' => 'Brand',
+                'name' => 'Mini Marvels',
+            ],
+            'category' => $product['category'],
+            'offers' => [
+                '@type' => 'Offer',
+                'url' => $productUrl,
+                'priceCurrency' => 'PKR',
+                'price' => number_format((float) $product['price'], 2, '.', ''),
+                'availability' => $availability,
+                'itemCondition' => 'https://schema.org/NewCondition',
+            ],
+        ];
+
+        if ($product['official_price']) {
+            $productSchema['offers']['priceValidUntil'] = now()->addMonths(3)->toDateString();
+        }
+
+        $breadcrumbSchema = [
+            '@type' => 'BreadcrumbList',
+            'itemListElement' => [
+                [
+                    '@type' => 'ListItem',
+                    'position' => 1,
+                    'name' => 'Home',
+                    'item' => url('/'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 2,
+                    'name' => 'Shop',
+                    'item' => route('shop'),
+                ],
+                [
+                    '@type' => 'ListItem',
+                    'position' => 3,
+                    'name' => $product['name'],
+                    'item' => $productUrl,
+                ],
+            ],
+        ];
+
         return view('livewire.product-page', compact('product', 'related'))
             ->layout('layouts.app', [
                 'title' => $pageTitle,
                 'metaDescription' => $pageDescription,
                 'metaKeywords' => $productModel->meta_keywords,
-                'ogType' => 'product',
+                'ogType' => 'website',
                 'ogImage' => $ogImage,
+                'canonicalUrl' => $productUrl,
+                'structuredData' => [$productSchema, $breadcrumbSchema],
             ]);
     }
 }

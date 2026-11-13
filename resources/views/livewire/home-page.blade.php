@@ -64,12 +64,19 @@
         </svg>
     </div>
 
-    <aside class="hero-social" aria-label="Social">
-        <a href="#">Facebook</a>
-        <a href="#">Instagram</a>
-        <a href="#">Twitter</a>
-        <a href="#">LinkedIn</a>
-    </aside>
+    @php
+        $heroSocial = collect(\App\Models\SiteSetting::resolvedSocialLinks())
+            ->filter(fn ($link) => in_array(($link['platform'] ?? ''), ['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'], true))
+            ->take(4)
+            ->values();
+    @endphp
+    @if ($heroSocial->isNotEmpty())
+        <aside class="hero-social" aria-label="Social">
+            @foreach ($heroSocial as $social)
+                <a href="{{ $social['url'] }}" target="_blank" rel="noopener noreferrer me">{{ $social['label'] ?? ucfirst($social['platform']) }}</a>
+            @endforeach
+        </aside>
+    @endif
 
     <div class="swiper hero-swiper">
         <div class="swiper-wrapper">
