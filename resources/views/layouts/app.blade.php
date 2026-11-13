@@ -62,7 +62,7 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@11/swiper-bundle.min.css">
     <link rel="stylesheet" href="{{ asset('css/app.css') }}?v={{ filemtime(public_path('css/app.css')) }}">
 
-    @include('partials.json-ld')
+    @includeIf('partials.json-ld')
 
     @livewireStyles
 </head>

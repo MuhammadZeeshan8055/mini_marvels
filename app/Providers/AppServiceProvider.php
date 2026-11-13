@@ -23,26 +23,41 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
-        View::composer('layouts.app', function ($view) {
-            $footer = SiteSetting::footerDefaults();
+        $shareFooter = function () {
+            static $footer = null;
 
-            if (Schema::hasTable('site_settings')) {
-                $footer = array_merge($footer, SiteSetting::getValue('footer', []));
+            if ($footer !== null) {
+                return $footer;
             }
 
-            $footer['newsletter_image'] = MediaUrl::resolve(
-                $footer['newsletter_image'] ?? null,
-                'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=240&h=240&fit=crop'
-            );
+            try {
+                $footer = SiteSetting::footerDefaults();
 
-            $footer['gallery_images'] = array_values(array_map(
-                fn ($url) => MediaUrl::resolve((string) $url),
-                $footer['gallery_images'] ?? []
-            ));
+                if (Schema::hasTable('site_settings')) {
+                    $footer = array_merge($footer, SiteSetting::getValue('footer', []));
+                }
 
-            $footer['social_links'] = SiteSetting::resolvedSocialLinks($footer);
+                $footer['newsletter_image'] = MediaUrl::resolve(
+                    $footer['newsletter_image'] ?? null,
+                    'https://images.unsplash.com/photo-1515488042361-ee00e0ddd4e4?w=240&h=240&fit=crop'
+                );
 
-            $view->with('footerSettings', $footer);
+                $footer['gallery_images'] = array_values(array_map(
+                    fn ($url) => MediaUrl::resolve((string) $url),
+                    is_array($footer['gallery_images'] ?? null) ? $footer['gallery_images'] : []
+                ));
+
+                $footer['social_links'] = SiteSetting::resolvedSocialLinks($footer);
+            } catch (\Throwable) {
+                $footer = SiteSetting::footerDefaults();
+                $footer['social_links'] = SiteSetting::defaultSocialLinks();
+            }
+
+            return $footer;
+        };
+
+        View::composer(['layouts.app', 'livewire.*'], function ($view) use ($shareFooter) {
+            $view->with('footerSettings', $shareFooter());
         });
     }
 }

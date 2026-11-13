@@ -65,8 +65,8 @@
     </div>
 
     @php
-        $heroSocial = collect(\App\Models\SiteSetting::resolvedSocialLinks())
-            ->filter(fn ($link) => in_array(($link['platform'] ?? ''), ['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'], true))
+        $heroSocial = collect(data_get($footerSettings ?? [], 'social_links', []))
+            ->filter(fn ($link) => is_array($link) && in_array(($link['platform'] ?? ''), ['facebook', 'instagram', 'twitter', 'linkedin', 'youtube'], true))
             ->take(4)
             ->values();
     @endphp

@@ -21,11 +21,16 @@ class SiteSetting extends Model
 
     public static function getValue(string $key, array $default = []): array
     {
-        return Cache::remember("site_setting.{$key}", 60, function () use ($key, $default) {
-            $setting = static::query()->where('key', $key)->first();
+        try {
+            return Cache::remember("site_setting.{$key}", 60, function () use ($key, $default) {
+                $setting = static::query()->where('key', $key)->first();
+                $value = $setting?->value;
 
-            return $setting?->value ?? $default;
-        });
+                return is_array($value) ? $value : $default;
+            });
+        } catch (\Throwable) {
+            return $default;
+        }
     }
 
     public static function putValue(string $key, array $value): void
@@ -93,41 +98,52 @@ class SiteSetting extends Model
      */
     public static function resolvedSocialLinks(?array $footer = null): array
     {
-        $footer ??= array_merge(static::footerDefaults(), static::getValue('footer', []));
-        $links = $footer['social_links'] ?? [];
-
-        if (! is_array($links) || $links === []) {
-            $links = static::defaultSocialLinks();
-        }
-
-        $resolved = [];
-
-        foreach ($links as $link) {
-            $platform = strtolower(trim((string) ($link['platform'] ?? '')));
-            $url = trim((string) ($link['url'] ?? ''));
-
-            if ($url === '' || $url === '#') {
-                $url = trim((string) config("seo.social.{$platform}", ''));
+        try {
+            if ($footer === null) {
+                $footer = static::footerDefaults();
             }
 
-            if ($platform === '' || (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://'))) {
-                continue;
+            $links = $footer['social_links'] ?? [];
+
+            if (! is_array($links) || $links === []) {
+                $links = static::defaultSocialLinks();
             }
 
-            $resolved[] = [
-                'platform' => $platform,
-                'url' => $url,
-                'label' => match ($platform) {
-                    'twitter' => 'X',
-                    'youtube' => 'YouTube',
-                    'linkedin' => 'LinkedIn',
-                    'tiktok' => 'TikTok',
-                    default => ucfirst($platform),
-                },
-            ];
-        }
+            $resolved = [];
 
-        return array_values($resolved);
+            foreach ($links as $link) {
+                if (! is_array($link)) {
+                    continue;
+                }
+
+                $platform = strtolower(trim((string) ($link['platform'] ?? '')));
+                $url = trim((string) ($link['url'] ?? ''));
+
+                if ($url === '' || $url === '#') {
+                    $url = trim((string) config("seo.social.{$platform}", ''));
+                }
+
+                if ($platform === '' || (! str_starts_with($url, 'http://') && ! str_starts_with($url, 'https://'))) {
+                    continue;
+                }
+
+                $resolved[] = [
+                    'platform' => $platform,
+                    'url' => $url,
+                    'label' => match ($platform) {
+                        'twitter' => 'X',
+                        'youtube' => 'YouTube',
+                        'linkedin' => 'LinkedIn',
+                        'tiktok' => 'TikTok',
+                        default => ucfirst($platform),
+                    },
+                ];
+            }
+
+            return array_values($resolved);
+        } catch (\Throwable) {
+            return static::defaultSocialLinks();
+        }
     }
 
     public static function testimonialIntroDefaults(): array
